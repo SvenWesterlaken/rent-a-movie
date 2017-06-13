@@ -1,0 +1,19 @@
+{
+  "name": "rent-a-movie",
+  "version": "1.0.0",
+  "description": "Programmeren 4 tentamen",
+  "main": "api/index.js",
+  "scripts": {
+	"start": "node ./api/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SvenWesterlaken/rent-a-movie"
+  },
+  "author": "Sven Westerlaken",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SvenWesterlaken/rent-a-movie/issues"
+  },
+  "homepage": "https://github.com/SvenWesterlaken/rent-a-movie#readme"
+}

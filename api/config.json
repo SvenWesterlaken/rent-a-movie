@@ -1,0 +1,9 @@
+{
+  "webPort": "8080",
+  "dbServer": "localhost",
+  "dbUsername": "root",
+  "dbPassword": "",
+  "dbSchema": "world",
+  "dbUserSchema": "userdetails",
+  "secretkey":  "SecretKeyForWorldDatabase-210984756347-"
+}

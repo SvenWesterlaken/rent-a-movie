@@ -1,63 +1,59 @@
 sudo: false
 
-jobs:
+matrix:
   include:
-    - stage: test
-      matrix:
-        include:
-          - language: android
-            jdk: oraclejdk8
-            cache: false
-            sudo: false
+    - language: android
+      jdk: oraclejdk8
+      cache: false
+      sudo: false
 
-            before_install:
-              - mkdir "$ANDROID_HOME/licenses" || true
-              - echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
-              - echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
+      before_install:
+        - mkdir "$ANDROID_HOME/licenses" || true
+        - echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
+        - echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
 
-            licenses:
-              - android-sdk-license-.+
-              - '.+'
+      licenses:
+        - android-sdk-license-.+
+        - '.+'
 
-            before_script:
-              - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a
-              - emulator -avd test -no-skin -no-audio -no-window &
-              - android-wait-for-emulator
-              - adb shell input keyevent 82 &
+      before_script:
+        - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a
+        - emulator -avd test -no-skin -no-audio -no-window &
+        - android-wait-for-emulator
+        - adb shell input keyevent 82 &
 
-            android:
-              components:
-                - tools
-                - platform-tools
-                - build-tools-25.0.2
+      android:
+        components:
+          - tools
+          - platform-tools
+          - build-tools-25.0.2
 
-                - android-22
+          - android-22
 
-                - extra-google-google_play_services
-                - extra-google-m2repository
-                - extra-android-m2repository
-                - addon-google_apis-google-19
+          - extra-google-google_play_services
+          - extra-google-m2repository
+          - extra-android-m2repository
+          - addon-google_apis-google-19
 
-                - sys-img-armeabi-v7a-android-22
-                - sys-img-armeabi-v7a-android-17
+          - sys-img-armeabi-v7a-android-22
+          - sys-img-armeabi-v7a-android-17
 
-            branches:
-              only:
-                - master
-                - develop
+      branches:
+        only:
+          - master
+          - develop
 
-          - language: node_js
-            node_js:
-              - "stable"
+    - language: node_js
+      node_js:
+        - "stable"
 
-            before_install:
-              - cd ./api
+      before_install:
+        - cd ./api
 
-            after_success:
-              - cd ./api
-              - npm run coveralls
+      after_success:
+        - cd ./api
+        - npm run coveralls
 
-    - stage: deploy
       before_deploy:
         - cd ./api
       deploy:

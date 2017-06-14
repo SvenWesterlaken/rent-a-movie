@@ -19,7 +19,7 @@
     "url": "https://github.com/SvenWesterlaken/rent-a-movie/issues"
   },
   "homepage": "https://github.com/SvenWesterlaken/rent-a-movie#readme",
-  "devDependencies": {
+  "dependencies": {
     "body-parser": "^1.17.2",
     "chai": "^4.0.2",
     "chai-http": "^3.0.0",

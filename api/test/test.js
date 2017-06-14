@@ -11,7 +11,7 @@ describe('API test', function() {
       .get('/hello')
       .end(function(err, res) {
         res.should.have.status(200);
-        res.should.equal({"msg": "Hi, have a nice NodeJS day."});
+        res.should.have.property("msg", "Hi, have a nice NodeJS day.");
         done();
       });
   });

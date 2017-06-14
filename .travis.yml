@@ -1,56 +1,64 @@
-language: android
-cache: false
-dist: trusty
-sudo: required
-group: edge
-jdk: oraclejdk8
+matrix:
+  include:
+    - language: android
+      jdk: oraclejdk8
+      cache: false
+      dist: trusty
+      sudo: required
+      group: edge
 
-before_install:
-  - mkdir "$ANDROID_HOME/licenses" || true
-  - echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
-  - echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
-  - source /opt/jdk_switcher/jdk_switcher.sh
-  - jdk_switcher use default
-  
-licenses:
-  - android-sdk-license-.+
-  - '.+'
+      before_install:
+        - mkdir "$ANDROID_HOME/licenses" || true
+        - echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
+        - echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
+        - source /opt/jdk_switcher/jdk_switcher.sh
+        - jdk_switcher use default
 
-android:
-  components:
-    # Uncomment the lines below if you want to
-    # use the latest revision of Android SDK Tools
-    - tools
-    - platform-tools
-    - build-tools-25.0.2
+      licenses:
+        - android-sdk-license-.+
+        - '.+'
 
-    # The SDK version used to compile your project
-    - android-25
-    
-    # Additional components
-    - extra-google-google_play_services
-    - extra-google-m2repository
-    - extra-android-m2repository
-    - addon-google_apis-google-19
 
-    # Specify at least one system image,
-    # if you need to run emulator(s) during your tests
-    # - sys-img-armeabi-v7a-android-22
-    # - sys-img-armeabi-v7a-android-17
-    
-addons:
-    sonarqube:
-        organization: "zandkorrel-github"
-        token:
-            secure: f65271edd211baa9bce0aedb96573c4217b82401
-        branches:
-            - develop
-            
-branches:
-    only:
-        - master
-        - develop
-            
-script:
-    - ./gradlew sonarqube -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=zandkorrel-github -Dsonar.login=f65271edd211baa9bce0aedb96573c4217b82401
-        
+      licenses:
+        - android-sdk-license-.+
+        - '.+'
+
+      android:
+        components:
+          - tools
+          - platform-tools
+          - build-tools-25.0.2
+
+          - android-22
+
+          - extra-google-google_play_services
+          - extra-google-m2repository
+          - extra-android-m2repository
+          - addon-google_apis-google-19
+
+          - sys-img-armeabi-v7a-android-22
+          - sys-img-armeabi-v7a-android-17
+
+      branches:
+        only:
+          - master
+          - develop
+
+    - language: node_js
+      node_js:
+        - "stable"
+
+      before_install:
+        - cd ./api
+
+  after_success:
+    - cd ./api
+    - npm run coveralls
+
+  deploy:
+    provider: heroku
+    api_key:
+      secure: "7eec7a0d-9b76-44b1-b861-90610f33260c"
+    app: programmeren-tent-4
+    on:
+      - all_branches

@@ -4,6 +4,7 @@ var express = require('express'),
     pool = require('../database/db'),
     auth =  require('../auth/auth');
 
+
 //hier worden alle uitgeleende films door customer getoond
 router.get('/rentals/:userid', function (req, res) {
     var userId = req.params.id;

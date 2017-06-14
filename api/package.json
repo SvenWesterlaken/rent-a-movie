@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url":  "git+https://github.com/SvenWesterlaken/rent-a-movie"
+    "url": "git+https://github.com/SvenWesterlaken/rent-a-movie"
   },
   "author": "Sven Westerlaken & Devon Marsham",
   "license": "ISC",
@@ -21,12 +21,13 @@
   "homepage": "https://github.com/SvenWesterlaken/rent-a-movie#readme",
   "dependencies": {
     "body-parser": "^1.17.2",
-    "chai": "^4.0.2",
-    "chai-http": "^3.0.0",
     "express": "^4.15.3",
     "jwt-simple": "^0.5.1",
-    "mocha": "^3.4.2",
     "moment": "^2.18.1",
-    "mysql": "^2.13.0"
-  }
+    "mysql": "^2.13.0",
+    "istanbul": "^0.4.5",
+    "chai": "^4.0.2",
+    "chai-http": "^3.0.0",
+    "mocha": "^3.4.2"
+  },
 }

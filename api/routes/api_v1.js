@@ -4,6 +4,102 @@ var express = require('express'),
     pool = require('../database/db'),
     auth =  require('../auth/auth');
 
+router.all( new RegExp("[^(\/login)|(\/register)]"), function (req, res, next) {
+    console.log("VALIDATE TOKEN")
+    var token = (req.header('W-Access-Token')) || '';
+    auth.decodeToken(token, function (err, payload) {
+        if (err) {
+            console.log('Error handler: ' + err.message);
+            res.status((err.status || 401 )).json({error: new Error("Not authorised").message});
+        } else {
+            next();
+        }
+    });
+});
+
+router.post('/register', function(req, res) {
+  const saltRounds = 10;
+  var email = req.body.email || '';
+  var password = req.body.password || '';
+
+  if (email != null && password != null) {
+    query = 'SELECT * FROM customer WHERE email = "' + email + '";';
+
+    pool.getConnection( function(error, connection) {
+      if (error) { throw error }
+      connection.query(query, function (error, rows, fields) {
+        connection.release();
+        if(error) {
+          throw error
+        }
+
+        // Generate JWT
+        if( rows[0] ) {
+            res.status(401).json({"error" : "User already exists."});
+        } else {
+
+          password = bcrypt.hashSync(password, saltRounds);
+
+            query_add = 'INSERT INTO `customer` (email, password) VALUES ("' + email + '", "' + password + '")'
+
+            pool.getConnection( function(error, connection) {
+              if (error) { throw error }
+              connection.query(query_add, function(error, rows, fields) {
+                connection.release();
+
+                if(error) {
+                  res.status(401).json({"error":"Customer has not been added"})
+                  throw error
+                }
+
+                res.status(200).end(JSON.stringify(rows));
+
+              });
+            });
+        }
+      });
+    });
+
+  } else {
+    res.status(404).json({"msg" : "No register credentials in the body."});
+  }
+
+
+});
+
+router.post('/login', function(req, res) {
+  var email = req.body.email || '';
+  var password = req.body.password || '';
+
+  if (email != null && password != null) {
+    query = 'SELECT * FROM customer WHERE email = "' + email + '";';
+
+    pool.getConnection( function(error, connection) {
+      if (error) { throw error }
+      connection.query(query, function (error, rows, fields) {
+        connection.release();
+        if(error) {
+          throw error
+        }
+
+        if( rows[0] ) {
+            var response = JSON.parse(JSON.stringify(rows[0]));
+            console.log(response);
+            if(bcrypt.compareSync(password, response['password'])) {
+              res.status(200).json({"token" : auth.encodeToken(email), "email" : email});
+            }
+        } else {
+            res.status(401).json({"error":"Invalid credentials"})
+        }
+      })
+    });
+
+  } else {
+    res.status(404).json({"msg" : "No login credentials in the body."});
+  }
+
+});
+
 
 //hier worden alle uitgeleende films door customer getoond
 router.get('/rentals/:userid', function (req, res) {
@@ -47,6 +143,13 @@ router.get('/films/:id', function (req,res) {
             res.status(200).json(rows);
         };
     });
+});
+
+router.get('*', function(request, response) {
+  response.status(404);
+  response.json({
+    "msg": "Api endpoint not available"
+  });
 });
 
 

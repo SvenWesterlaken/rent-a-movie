@@ -1,11 +1,32 @@
 {
   "name": "rentamovie",
   "version": "1.0.0",
-  "description": "",
+  "description": "Programmeren 4 tentamen",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "test": "mocha",
+    "cover": "instanbul cover _mocha",
+    "coveralls": "npm run cover -- --report lcovonly && cat ./coverage/lcov.info | coveralls"
+  },
+  "repository": {
+    "type": "git",
+    "url":  "git+https://github.com/SvenWesterlaken/rent-a-movie"
   },
   "author": "Sven Westerlaken & Devon Marsham",
-  "license": "ISC"
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SvenWesterlaken/rent-a-movie/issues"
+  },
+  "homepage": "https://github.com/SvenWesterlaken/rent-a-movie#readme",
+  "devDependencies": {
+    "body-parser": "^1.17.2",
+    "chai": "^4.0.2",
+    "chai-http": "^3.0.0",
+    "express": "^4.15.3",
+    "jwt-simple": "^0.5.1",
+    "mocha": "^3.4.2",
+    "moment": "^2.18.1",
+    "mysql": "^2.13.0"
+  }
 }

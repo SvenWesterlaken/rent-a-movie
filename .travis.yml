@@ -1,3 +1,5 @@
+sudo: false
+
 matrix:
   include:
     - language: android
@@ -48,17 +50,11 @@ matrix:
       before_install:
         - cd ./api
 
+      deploy:
+        provider: heroku
+        api_key:
+          secure: "7eec7a0d-9b76-44b1-b861-90610f33260c"
+        app: programmeren-tent-4
+
       after_success:
-        - cd ./api
         - npm run coveralls
-
-  before_deploy:
-    - cd ./api
-
-  deploy:
-    provider: heroku
-    api_key:
-      secure: "7eec7a0d-9b76-44b1-b861-90610f33260c"
-    app: programmeren-tent-4
-    on:
-      - all_branches

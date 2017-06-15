@@ -112,7 +112,7 @@ router.get('/rentals/:userid', function (req, res) {
         'JOIN customer' +
         ' on rental.customer_id = customer.customer_id', [userId], function (errors, rows, fields) {
         if (errors){
-            res.status(400).json(errors);
+            throw errors
         }else {
             res.status(200).json(rows);
         };
@@ -123,12 +123,16 @@ router.get('/rentals/:userid', function (req, res) {
 // Hier wordt de lijst van alle films getoond
 router.get('/films', function (req, res) {
 
+    var offset = parseInt(req.query.offset),
+        count = parseInt(req.query.count);
+
+
     res.contentType('application/json');
     pool.query('SELECT * FROM film LIMIT ? OFFSET ?',
-        [req.query.limit, req.query.offset],
+        [count, offset],
         function (error, rows, fields) {
         if (error) {
-            res.status(400).json(error);
+            throw error
         } else {
             res.status(200).json(rows);
         };
@@ -141,7 +145,7 @@ router.get('/films/:id', function (req,res) {
     res.contentType('application/json');
     pool.query('SELECT * FROM film WHERE film_id=?', [filmId], function (errors, rows, fields) {
         if (errors){
-            res.status(400).json(errors);
+            throw errors
         }else {
             res.status(200).json(rows);
         };

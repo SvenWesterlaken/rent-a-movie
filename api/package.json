@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/SvenWesterlaken/rent-a-movie#readme",
   "dependencies": {
-    "bcrypt": "^1.0.2",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.17.2",
     "chai": "^4.0.2",
     "chai-http": "^3.0.0",

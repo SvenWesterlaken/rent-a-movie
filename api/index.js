@@ -17,10 +17,17 @@ app.all('*', function(req, res, next){
 
 app.get('/hello', function(req, res, next){
   res.contentType('application/json');
+  res.status(200);
   res.json({"msg": "Hi, have a nice NodeJS day."})
 });
 
 app.use('/api/v1', require('./routes/api_v1'));
+
+app.all('*', function(req, res, next) {
+  res.contentType('application/json');
+  res.status(404);
+  res.json({"error": "Request endpoint not found"})
+});
 
 app.listen(port, function(){
   console.log('The magic happens at http://localhost:' + port);

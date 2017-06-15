@@ -1,11 +1,11 @@
 var express = require('express'),
     router = express.Router(),
     path = require('path'),
+    bcrypt = require('bcrypt'),
     pool = require('../database/db'),
     auth =  require('../auth/auth');
 
-router.all( new RegExp("[^(\/login)|(\/register)]"), function (req, res, next) {
-    console.log("VALIDATE TOKEN")
+router.all("/rentals/*", function (req, res, next) {
     var token = (req.header('W-Access-Token')) || '';
     auth.decodeToken(token, function (err, payload) {
         if (err) {
@@ -17,10 +17,13 @@ router.all( new RegExp("[^(\/login)|(\/register)]"), function (req, res, next) {
     });
 });
 
+//Register a user with {"email" : "<email>", "password" : "<password>", "firstname" : "<firstname>", "lastname" : "<lastname>"}
 router.post('/register', function(req, res) {
   const saltRounds = 10;
-  var email = req.body.email || '';
-  var password = req.body.password || '';
+  var email = req.body.email || '',
+      password = req.body.password || '',
+      firstName = req.body.firstname || '',
+      lastName = req.body.lastname || '';
 
   if (email != null && password != null) {
     query = 'SELECT * FROM customer WHERE email = "' + email + '";';
@@ -40,7 +43,7 @@ router.post('/register', function(req, res) {
 
           password = bcrypt.hashSync(password, saltRounds);
 
-            query_add = 'INSERT INTO `customer` (email, password) VALUES ("' + email + '", "' + password + '")'
+            query_add = 'INSERT INTO `customer` (email, password, first_name, last_name, create_date) VALUES ("' + email + '", "' + password + '", "' + firstName + '", "' + lastName + '", CURRENT_TIMESTAMP);'
 
             pool.getConnection( function(error, connection) {
               if (error) { throw error }
@@ -72,7 +75,7 @@ router.post('/login', function(req, res) {
   var password = req.body.password || '';
 
   if (email != null && password != null) {
-    query = 'SELECT * FROM customer WHERE email = "' + email + '";';
+    query = 'SELECT * FROM `customer` WHERE email = "' + email + '";';
 
     pool.getConnection( function(error, connection) {
       if (error) { throw error }

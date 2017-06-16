@@ -5,6 +5,7 @@ var express = require('express'),
     pool = require('../database/db'),
     auth =  require('../auth/auth');
 
+//Check for all rental endpoints if the user has provided an acces-token
 router.all("/rentals/*", function (req, res, next) {
     var token = (req.header('W-Access-Token')) || '';
     auth.decodeToken(token, function (err, payload) {
@@ -17,7 +18,7 @@ router.all("/rentals/*", function (req, res, next) {
     });
 });
 
-//Register a user with {"email" : "<email>", "password" : "<password>", "firstname" : "<firstname>", "lastname" : "<lastname>"}
+//Register a user with {"email" : "<email>", "password" : "<password>", "firstname" : "<firstname>", "lastname" : "<lastname>"} in the body
 router.post('/register', function(req, res) {
   const saltRounds = 10;
   var email = req.body.email || '',
@@ -70,7 +71,7 @@ router.post('/register', function(req, res) {
 
 });
 
-//Login with {"email" : "<email>", "password" : "<password>"}
+//Login with {"email" : "<email>", "password" : "<password>"} in the body
 router.post('/login', function(req, res) {
   var email = req.body.email || '';
   var password = req.body.password || '';
@@ -106,7 +107,7 @@ router.post('/login', function(req, res) {
 
 });
 
-//hier worden alle uitgeleende films door customer getoond
+//Get rentals from a user
 router.get('/rentals/:userid', function (req, res) {
     var userID = req.params.userid || 0;
 
@@ -116,23 +117,29 @@ router.get('/rentals/:userid', function (req, res) {
       var id = parseInt(userID);
 
       res.contentType('application/json');
-      pool.query('SELECT * FROM rental WHERE customer_id=?', [id], function (errors, rows, fields) {
-          if (errors){
-              throw errors
-          }else {
-            if(rows[0]) {
-              res.status(200).json(rows);
-            } else {
-              res.status(404).json({"msg" : "No rentals found"});
-            }
 
-          };
+      pool.getConnection( function(error, connection) {
+        if (error) { throw error }
+        pool.query('SELECT * FROM rental WHERE customer_id=?', [id], function (errors, rows, fields) {
+          connection.release();
+            if (errors){
+                throw errors
+            } else {
+              if(rows[0]) {
+                res.status(200).json(rows);
+              } else {
+                res.status(404).json({"msg" : "No rentals found"});
+              }
+
+            };
+        });
       });
     }
 
 
 });
 
+//Add a new rental
 router.post('/rentals/:userid/:inventoryid', function (req, res) {
   var inventoryID = req.params.inventoryid || 0,
       userID = req.params.userid || 0,
@@ -150,6 +157,7 @@ router.post('/rentals/:userid/:inventoryid', function (req, res) {
     pool.getConnection( function(error, connection) {
       if (error) { throw error }
       connection.query(query, function (error, rows, fields) {
+        connection.release();
     	  if (error) {
           throw error;
         }
@@ -159,48 +167,100 @@ router.post('/rentals/:userid/:inventoryid', function (req, res) {
   }
 });
 
-// Hier wordt de lijst van alle films getoond
-router.get('/films', function (req, res) {
+//Extend rental (change)
+router.put('/rentals/:userid/:inventoryid', function (req, res) {
+  var inventoryID = req.params.inventoryid || 0,
+      userID = req.params.userid || 0;
 
-    var offset = req.query.offset || '',
-        count = req.query.count || '';
+  if(isNaN(userID) || userID == 0) {
+    res.status(401).json({"error" : "No proper user ID given"});
+  } else if (isNaN(inventoryID) || userID == 0) {
+    res.status(401).json({"error" : "No proper inventory ID given"});
+  } else {
+    pool.getConnection( function(error, connection) {
+      if (error) { throw error }
+      connection.query('SELECT return_date FROM rental WHERE customer_id=? AND inventory_id=?', [parseInt(userID), parseInt(inventoryID)], function (error, rows, fields) {
+        connection.release();
+    	  if (error) {
+          throw error;
+        }
 
-    res.contentType('application/json');
+        if(rows[0]) {
+          var returnDate = JSON.parse(JSON.stringify(rows[0])).return_date;
 
-    if(offset != '' && count != '') {
-      pool.query('SELECT * FROM film LIMIT ? OFFSET ?',
-          [parseInt(count), parseInt(offset)],
-          function (error, rows, fields) {
-          if (error) {
-              throw error
-          } else {
-              res.status(200).json(rows);
-          };
-      });
-    } else {
-      pool.query('SELECT * FROM film',
-          function (error, rows, fields) {
-          if (error) {
-              throw error
-          } else {
-              res.status(200).json(rows);
-          };
-      });
-    }
+          pool.getConnection( function(error, connection) {
+            if (error) { throw error }
+            connection.query('UPDATE rental SET return_date=DATE_ADD("' + returnDate + '", INTERVAL 3 WEEK) WHERE customer_id=? AND inventory_id=?', [parseInt(userID), parseInt(inventoryID)], function (error, rows, fields) {
+              connection.release();
+          	  if (error) {
+                throw error;
+              }
+          	  res.status(200).end(JSON.stringify(rows));
+          	});
+          });
 
+        } else {
+
+        }
+    	});
+    });
+  }
 });
 
-// hier word een film getoont op id naar keuze
-router.get('/films/:id', function (req,res) {
-    var filmId = req.params.id;
-    res.contentType('application/json');
-    pool.query('SELECT * FROM film WHERE film_id=?', [filmId], function (errors, rows, fields) {
-        if (errors){
-            throw errors
-        }else {
-            res.status(200).json(rows);
-        };
+//Remove a rental
+router.delete('/rentals/:userid/:inventoryid', function (req, res) {
+  var inventoryID = req.params.inventoryid || 0,
+      userID = req.params.userid || 0;
+
+  if(isNaN(userID) || userID == 0) {
+    res.status(401).json({"error" : "No proper user ID given"});
+  } else if (isNaN(inventoryID) || userID == 0) {
+    res.status(401).json({"error" : "No proper inventory ID given"});
+  } else {
+    pool.getConnection( function(error, connection) {
+      if (error) { throw error }
+      connection.query('DELETE FROM rental WHERE customer_id=? AND inventory_id=?', [parseInt(userID), parseInt(inventoryID)], function (error, rows, fields) {
+        connection.release();
+    	  if (error) {
+          throw error;
+        }
+    	  res.status(200).end(JSON.stringify(rows));
+    	});
     });
+  }
+});
+
+// Get (a) movie(s)
+router.get('/films/:id?', function (req, res) {
+
+    var offset = req.query.offset || '',
+        count = req.query.count || '',
+        filmID = req.params.id || ''
+
+    res.contentType('application/json');
+
+    var query = 'SELECT * FROM film ';
+
+    if(filmID != '') {
+      query = query + 'WHERE film_id="' + filmID + '";';
+    }
+
+    if(offset != '' && count != '') {
+      query = query + 'LIMIT ' + parseInt(count) + ' OFFSET ' + parseInt(offset) + ';';
+    }
+
+    pool.getConnection( function(error, connection) {
+      if (error) { throw error }
+      connection.query(query, function (error, rows, fields) {
+        connection.release();
+    	  if (error) {
+          throw error;
+        }
+    	  res.status(200).json(rows);
+    	});
+    });
+
+
 });
 
 router.get('*', function(request, response) {

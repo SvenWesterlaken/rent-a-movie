@@ -9,7 +9,7 @@ router.all("/rentals/*", function (req, res, next) {
     var token = (req.header('W-Access-Token')) || '';
     auth.decodeToken(token, function (err, payload) {
         if (err) {
-            console.log('Error handler: ' + err.message);
+            //console.log('Error handler: ' + err.message);
             res.status((err.status || 401 )).json({error: new Error("Not authorised").message});
         } else {
             next();
@@ -64,7 +64,7 @@ router.post('/register', function(req, res) {
     });
 
   } else {
-    res.status(404).json({"msg" : "No(t enough) register credentials in the body."});
+    res.status(401).json({"error" : "No(t enough) register credentials in the body."});
   }
 
 
@@ -106,20 +106,30 @@ router.post('/login', function(req, res) {
 
 });
 
-
 //hier worden alle uitgeleende films door customer getoond
 router.get('/rentals/:userid', function (req, res) {
-    var userId = req.params.id;
-    res.contentType('application/json');
-    pool.query('SELECT * FROM rental ' +
-        'JOIN customer' +
-        ' on rental.customer_id = customer.customer_id', [userId], function (errors, rows, fields) {
-        if (errors){
-            throw errors
-        }else {
-            res.status(200).json(rows);
-        };
-    });
+    var userID = req.params.userid || 0;
+
+    if(isNaN(userID) || userID == 0) {
+      res.status(401).json({"error" : "No proper user ID given"});
+    } else {
+      var id = parseInt(userID);
+
+      res.contentType('application/json');
+      pool.query('SELECT * FROM rental WHERE customer_id=?', [id], function (errors, rows, fields) {
+          if (errors){
+              throw errors
+          }else {
+            if(rows[0]) {
+              res.status(200).json(rows);
+            } else {
+              res.status(404).json({"msg" : "No rentals found"});
+            }
+
+          };
+      });
+    }
+
 
 })
 

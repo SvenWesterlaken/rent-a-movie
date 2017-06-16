@@ -118,7 +118,34 @@ router.get('/rentals/:userid', function (req, res) {
         };
     });
 
-})
+});
+
+router.post('rentals/:userid/:inventoryid', function (req, res) {
+    var rental_id = req.body.rental_id || '',
+        rental_date = req.body.rental_date || '',
+        inventory_id = req.body.inventory_id ||'',
+        custormer_id = req.body.customer_id || '',
+        return_date = req.body.return_date || '',
+        staff_id = req.body.staff_id || ''
+    // var inventoryId = get('inventory_id');
+    // var customerId = get('customer_id');
+    // var returnDate = get('return_date');
+    // var staffId = get('staff_id');
+    // var lastUpdate = get('last_update')
+
+    pool.query(
+        'INSERT INTO rental (rental_id, rental_date, inventory_id, customer_id, return_date, staff_id, last_update)' +
+        'VALUES ("' + rental_id + '", "' + return_date + '", "' + inventory_id + '", "' + custormer_id + '", "' + return_date + '", "' + staff_id + '",)',
+        function (error,rows,fields) {
+            if (error)
+                throw error;
+            else {
+                res.status(200);
+                res.contentType('application/json');
+                res.json(rows);
+            }
+        });
+});
 
 // Hier wordt de lijst van alle films getoond
 router.get('/films', function (req, res) {

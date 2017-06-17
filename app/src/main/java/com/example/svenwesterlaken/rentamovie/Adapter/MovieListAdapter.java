@@ -1,15 +1,17 @@
 package com.example.svenwesterlaken.rentamovie.Adapter;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
+import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.example.svenwesterlaken.rentamovie.R;
-import com.example.svenwesterlaken.rentamovie.domain.Movie;
+import com.example.svenwesterlaken.rentamovie.domain.Movies;
 
 import java.util.ArrayList;
 import java.util.PriorityQueue;
@@ -18,59 +20,34 @@ import java.util.PriorityQueue;
  * Created by BlackWolf on 06/17/17.
  */
 
-public class MovieListAdapter extends BaseAdapter {
+public class MovieListAdapter extends ArrayAdapter<Movies> {
     private Context context;
-    private LayoutInflater inflater;
-    ArrayList movies;
 
-    public MovieListAdapter(Context context, LayoutInflater inflater, ArrayList<Movie>movies) {
+    public MovieListAdapter(Context context,ArrayList<Movies>movies) {
+        super(context, R.layout.row_movie_list, movies);
         this.context = context;
-        this.inflater = inflater;
-        this.movies = movies;
     }
 
-    @Override
-    public int getCount() {
-        return movies.size();
-    }
 
-    @Override
-    public Object getItem(int position) {
-        return movies.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder viewHolder;
+        Movies movies = (Movies) getItem(position);
 
         if (convertView == null) {
-            convertView = inflater.inflate(R.layout.row_movie_list, null);
-
-            viewHolder = new ViewHolder();
-            viewHolder.title = (TextView) convertView.findViewById(R.id.activityMovie_TV_title);
-            viewHolder.rating = (TextView) convertView.findViewById(R.id.activityMovie_TV_rating);
-            viewHolder.releaseYear = (TextView) convertView.findViewById(R.id.activityMovie_TV_releaseYear);
-
-            convertView.setTag(viewHolder);
-        } else {
-            viewHolder = (ViewHolder) convertView.getTag();
+            convertView = LayoutInflater.from(context).inflate(R.layout.row_movie_list, parent, false);
         }
 
-        final Movie movie = (Movie) movies.get(position);
+        TextView title = (TextView) convertView.findViewById(R.id.activityMovie_TV_title);
+        TextView rating = (TextView) convertView.findViewById(R.id.activityMovie_TV_rating);
+        TextView releaseYear = (TextView) convertView.findViewById(R.id.activityMovie_TV_releaseYear);
 
-        viewHolder.title.setText(movie.getTitle());
-        viewHolder.rating.setText(movie.getRating());
-        viewHolder.releaseYear.setText(movie.getRelease_year());
+        title.setText(movies.getTitle());
+        rating.setText(movies.getRating());
+        releaseYear.setText(movies.getRelease_year());
 
         return convertView;
     }
 
-    private static class ViewHolder{
-        TextView title, rating, releaseYear;
-    }
+
 }

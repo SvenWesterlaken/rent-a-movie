@@ -1,17 +1,22 @@
 <resources>
     <string name="app_name">Rent A Movie</string>
 
-    <!-- Strings related to login -->
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password (optional)</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="error_invalid_email">This email address is invalid</string>
-    <string name="error_invalid_password">This password is too short</string>
-    <string name="error_incorrect_password">This password is incorrect</string>
-    <string name="error_field_required">This field is required</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
     <string name="title_activity_movie">MovieActivity</string>
+    <string name="preference_file_key">com.example.svenwesterlaken.SHARED_PREFS_FILE</string>
+    <string name="saved_token">saved_token</string>
+    <string name="token_expiration_timestamp">token_timestamp</string>
+
+    <!-- Error messages-->
+    <string name="error_server_offline">Kon de server niet bereiken - probeer het nog een keer.</string>
+    <string name="token_user_mail">user_mail</string>
+    <string name="prompt_email">prompt_email</string>
+    <string name="prompt_password">prompt_password</string>
+    <string name="action_sign_in">action_sign_in</string>
+    <string name="title_activity_movies_pager_adapter">MoviesPagerAdapter</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+
+    //---------------------Deze 2 moeten veranderd worden maybe--------------------------
+
+    // ----------------------------------------------------------------------------------
 </resources>

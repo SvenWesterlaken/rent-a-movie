@@ -7,24 +7,32 @@ import java.io.Serializable;
  * Worked on by Devon Marsham 16-6-2017.
  */
 
-public class Movie implements Serializable{
+public class Movies implements Serializable{
+    //================================================================================
+    // Properties
+    // ================================================================================
     private int film_id;
     private String title;
     private String description;
-    private String release_year;
+    private int release_year;
     private int Language_id;
     private int Original_Language_id;
     private int rental_duration;
-    private int rental_rate;
+    private double rental_rate;
     private int length;
     private double replacement_cost;
     private String rating;
     private String special_features;
     private String last_update;
 
-    public Movie(int film_id, int rental_duration, int rental_rate, int length, int language_id,
-                 int original_Language_id, String title, String description, String release_year,
-                 String rating, String special_features, String last_update, double replacement_cost){
+    //================================================================================
+    // Constructors
+    //================================================================================
+    public Movies(int film_id, String title, String description, int release_year, int language_id,
+                  int original_Language_id, int rental_duration, double rental_rate,
+                  int length,double replacement_cost, String rating,
+                  String special_features, String last_update)
+    {
         this.film_id = film_id;
         this.title = title;
         this.description = description;
@@ -44,6 +52,7 @@ public class Movie implements Serializable{
     //================================================================================
     // Accessors
     //================================================================================
+
     public int getFilm_id() {
         return film_id;
     }
@@ -56,7 +65,7 @@ public class Movie implements Serializable{
         return description;
     }
 
-    public String getRelease_year() {
+    public int getRelease_year() {
         return release_year;
     }
 
@@ -72,7 +81,7 @@ public class Movie implements Serializable{
         return rental_duration;
     }
 
-    public int getRental_rate() {
+    public double getRental_rate() {
         return rental_rate;
     }
 
@@ -101,6 +110,7 @@ public class Movie implements Serializable{
     // Mutators
     //================================================================================
 
+
     public void setFilm_id(int film_id) {
         this.film_id = film_id;
     }
@@ -113,7 +123,7 @@ public class Movie implements Serializable{
         this.description = description;
     }
 
-    public void setRelease_year(String release_year) {
+    public void setRelease_year(int release_year) {
         this.release_year = release_year;
     }
 
@@ -129,7 +139,7 @@ public class Movie implements Serializable{
         this.rental_duration = rental_duration;
     }
 
-    public void setRental_rate(int rental_rate) {
+    public void setRental_rate(double rental_rate) {
         this.rental_rate = rental_rate;
     }
 

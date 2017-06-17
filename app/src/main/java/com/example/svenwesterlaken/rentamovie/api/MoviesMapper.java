@@ -56,11 +56,6 @@ class MoviesMapper {
 
                 Log.i("LastUpdate", lastUpdate);
 
-                //String lastUpdateDate = new SimpleDateFormat("yyyy-MM-dd HH':'mm':'ss':'SS", Locale.ENGLISH).format(lastUpdateInputDate);
-//				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-ddHH:mm:ss", Locale.ENGLISH);
-//				sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-//				String lastUpdateDate = sdf.format(lastUpdate);
-
                 Movies movie = new Movies(id, title, description, releaseYear, languageID, originalLanguageID, rentalDuration, rentalRate, length, replacementCost, rating, specialFeatures, lastUpdate);
                 result.add(movie);
             }

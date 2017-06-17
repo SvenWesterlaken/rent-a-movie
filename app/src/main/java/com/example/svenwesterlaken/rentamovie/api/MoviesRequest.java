@@ -78,7 +78,7 @@ public class MoviesRequest {
 
 
         public interface MoviesRequestListener {
-            void onMoviesAvailable(ArrayList<Movies> film);
+            void onMoviesAvailable(ArrayList<Movies> moviesArrayList);
 
             void onMovieAvailable(Movies movie);
 

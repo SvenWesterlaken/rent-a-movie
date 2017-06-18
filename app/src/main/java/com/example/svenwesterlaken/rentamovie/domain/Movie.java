@@ -1,155 +1,160 @@
 package com.example.svenwesterlaken.rentamovie.domain;
 
-import java.io.Serializable;
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by Sven Westerlaken on 13-6-2017.
  * Worked on by Devon Marsham 16-6-2017.
  */
 
-public class Movie implements Serializable{
-    private int film_id;
-    private String title;
-    private String description;
-    private String release_year;
-    private int Language_id;
-    private int Original_Language_id;
-    private int rental_duration;
-    private int rental_rate;
-    private int length;
-    private double replacement_cost;
-    private String rating;
-    private String special_features;
-    private String last_update;
+public class Movie implements Parcelable {
 
-    public Movie(int film_id, int rental_duration, int rental_rate, int length, int language_id,
-                 int original_Language_id, String title, String description, String release_year,
-                 String rating, String special_features, String last_update, double replacement_cost){
-        this.film_id = film_id;
+    @SerializedName("film_id")
+    private int id;
+    @SerializedName("title")
+    private String title;
+    @SerializedName("description")
+    private String description;
+    @SerializedName("release_year")
+    private String releaseYear;
+    @SerializedName("rental_rate")
+    private int rentalRate;
+    @SerializedName("length")
+    private int length;
+    @SerializedName("replacement_cost")
+    private double replacementCost;
+    @SerializedName("rating")
+    private String rating;
+    @SerializedName("special_features")
+    private String specialFeatures;
+
+    public Movie(int id, String title, String description, String releaseYear, int rentalRate, int length, double replacementCost, String rating, String specialFeatures) {
+        this.id = id;
         this.title = title;
         this.description = description;
-        this.release_year = release_year;
-        this.Language_id = language_id;
-        this.Original_Language_id = original_Language_id;
-        this.rental_duration = rental_duration;
-        this.rental_rate = rental_rate;
+        this.releaseYear = releaseYear;
+        this.rentalRate = rentalRate;
         this.length = length;
-        this.replacement_cost = replacement_cost;
+        this.replacementCost = replacementCost;
         this.rating = rating;
-        this.special_features = special_features;
-        this.last_update = last_update;
+        this.specialFeatures = specialFeatures;
     }
 
+    public int getId() {
+        return id;
+    }
 
-    //================================================================================
-    // Accessors
-    //================================================================================
-    public int getFilm_id() {
-        return film_id;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getTitle() {
         return title;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public String getRelease_year() {
-        return release_year;
-    }
-
-    public int getLanguage_id() {
-        return Language_id;
-    }
-
-    public int getOriginal_Language_id() {
-        return Original_Language_id;
-    }
-
-    public int getRental_duration() {
-        return rental_duration;
-    }
-
-    public int getRental_rate() {
-        return rental_rate;
-    }
-
-    public int getLength() {
-        return length;
-    }
-
-    public double getReplacement_cost() {
-        return replacement_cost;
-    }
-
-    public String getRating() {
-        return rating;
-    }
-
-    public String getSpecial_features() {
-        return special_features;
-    }
-
-    public String getLast_update() {
-        return last_update;
-    }
-
-
-    //================================================================================
-    // Mutators
-    //================================================================================
-
-    public void setFilm_id(int film_id) {
-        this.film_id = film_id;
-    }
-
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
     }
 
-    public void setRelease_year(String release_year) {
-        this.release_year = release_year;
+    public String getReleaseYear() {
+        return releaseYear;
     }
 
-    public void setLanguage_id(int language_id) {
-        Language_id = language_id;
+    public void setReleaseYear(String releaseYear) {
+        this.releaseYear = releaseYear;
     }
 
-    public void setOriginal_Language_id(int original_Language_id) {
-        Original_Language_id = original_Language_id;
+    public int getRentalRate() {
+        return rentalRate;
     }
 
-    public void setRental_duration(int rental_duration) {
-        this.rental_duration = rental_duration;
+    public void setRentalRate(int rentalRate) {
+        this.rentalRate = rentalRate;
     }
 
-    public void setRental_rate(int rental_rate) {
-        this.rental_rate = rental_rate;
+    public int getLength() {
+        return length;
     }
 
     public void setLength(int length) {
         this.length = length;
     }
 
-    public void setReplacement_cost(double replacement_cost) {
-        this.replacement_cost = replacement_cost;
+    public double getReplacementCost() {
+        return replacementCost;
+    }
+
+    public void setReplacementCost(double replacementCost) {
+        this.replacementCost = replacementCost;
+    }
+
+    public String getRating() {
+        return rating;
     }
 
     public void setRating(String rating) {
         this.rating = rating;
     }
 
-    public void setSpecial_features(String special_features) {
-        this.special_features = special_features;
+    public String getSpecialFeatures() {
+        return specialFeatures;
     }
 
-    public void setLast_update(String last_update) {
-        this.last_update = last_update;
+    public void setSpecialFeatures(String specialFeatures) {
+        this.specialFeatures = specialFeatures;
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.id);
+        dest.writeString(this.title);
+        dest.writeString(this.description);
+        dest.writeString(this.releaseYear);
+        dest.writeInt(this.rentalRate);
+        dest.writeInt(this.length);
+        dest.writeDouble(this.replacementCost);
+        dest.writeString(this.rating);
+        dest.writeString(this.specialFeatures);
+    }
+
+    protected Movie(Parcel in) {
+        this.id = in.readInt();
+        this.title = in.readString();
+        this.description = in.readString();
+        this.releaseYear = in.readString();
+        this.rentalRate = in.readInt();
+        this.length = in.readInt();
+        this.replacementCost = in.readDouble();
+        this.rating = in.readString();
+        this.specialFeatures = in.readString();
+    }
+
+    public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {
+        @Override
+        public Movie createFromParcel(Parcel source) {
+            return new Movie(source);
+        }
+
+        @Override
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
 }

@@ -31,6 +31,7 @@ public class Movie implements Parcelable {
     @SerializedName("special_features")
     private String specialFeatures;
 
+
     public Movie(int id, String title, String description, String releaseYear, int rentalRate, int length, double replacementCost, String rating, String specialFeatures) {
         this.id = id;
         this.title = title;
@@ -114,7 +115,6 @@ public class Movie implements Parcelable {
     public void setSpecialFeatures(String specialFeatures) {
         this.specialFeatures = specialFeatures;
     }
-
 
     @Override
     public int describeContents() {

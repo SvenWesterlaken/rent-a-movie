@@ -107,6 +107,35 @@ router.post('/login', function(req, res) {
 
 });
 
+router.get('/inventory/:filmid', function(req, res) {
+  var filmID = req.params.filmid || 0;
+
+  if(isNaN(filmID) || filmID == 0) {
+    res.status(401).json({"error" : "No proper film ID given"});
+  } else {
+    var id = parseInt(filmID);
+
+    res.contentType('application/json');
+
+    pool.getConnection( function(error, connection) {
+      if (error) { throw error }
+      pool.query('SELECT * FROM `view_rental` WHERE film_id=?', [id], function (errors, rows, fields) {
+        connection.release();
+          if (errors){
+              throw errors
+          } else {
+            if(rows[0]) {
+              res.status(200).json(rows);
+            } else {
+              res.status(404).json({"msg" : "No items found"});
+            }
+
+          };
+      });
+    });
+  }
+});
+
 //Get rentals from a user
 router.get('/rentals/:userid', function (req, res) {
     var userID = req.params.userid || 0;
@@ -120,7 +149,7 @@ router.get('/rentals/:userid', function (req, res) {
 
       pool.getConnection( function(error, connection) {
         if (error) { throw error }
-        pool.query('SELECT * FROM rental WHERE customer_id=?', [id], function (errors, rows, fields) {
+        pool.query('SELECT * FROM view_rental WHERE customer_id=?', [id], function (errors, rows, fields) {
           connection.release();
             if (errors){
                 throw errors
@@ -150,8 +179,8 @@ router.post('/rentals/:userid/:inventoryid', function (req, res) {
   } else if (isNaN(inventoryID) || inventoryID == 0) {
     res.status(401).json({"error" : "No proper inventory ID given"});
   } else {
-    var query = 'INSERT INTO rental (inventory_id, customer_id, rental_date, return_date, staff_id) VALUES ' +
-                '("' + inventoryID + '", "' + userID + '", CURRENT_TIMESTAMP, DATE_ADD(NOW(), INTERVAL 3 WEEK), "' + staffID + '")';
+    var query = 'INSERT INTO rental (inventory_id, customer_id, rental_date, return_date, staff_id, available) VALUES ' +
+                '("' + inventoryID + '", "' + userID + '", CURRENT_TIMESTAMP, DATE_ADD(NOW(), INTERVAL 3 WEEK), "' + staffID + '", 0)';
 
 
     pool.getConnection( function(error, connection) {
@@ -219,7 +248,7 @@ router.delete('/rentals/:userid/:inventoryid', function (req, res) {
   } else {
     pool.getConnection( function(error, connection) {
       if (error) { throw error }
-      connection.query('DELETE FROM rental WHERE customer_id=? AND inventory_id=?', [parseInt(userID), parseInt(inventoryID)], function (error, rows, fields) {
+      connection.query('UPDATE rental SET available=1, return_date=CURRENT_TIMESTAMP WHERE customer_id=? AND inventory_id=?', [parseInt(userID), parseInt(inventoryID)], function (error, rows, fields) {
         connection.release();
     	  if (error) {
           throw error;

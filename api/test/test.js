@@ -4,10 +4,12 @@ var chai = require('chai'),
     auth = require('../auth/auth'),
     test = require('./functions'),
     chai_arrays = require('chai-arrays'),
+    chai_things = require('chai-things'),
     expect = chai.expect;
 
 chai.use(chai_http);
-chai.use(chai_arrays)
+chai.use(chai_arrays);
+chai.use(chai_things);
 
 describe('Standard urls', function() {
   it('Hello message', function(done) {
@@ -29,6 +31,18 @@ describe('Standard urls', function() {
         expect(res).to.have.status(404);
         expect(res).to.be.json;
         expect(res.body).to.include({"error" : "Request endpoint not found"});
+        done();
+      });
+  });
+
+  it('Unsupported API URL (Error message)', function(done) {
+    chai.request(server)
+      .get('/api/v1/info')
+      .end(function(err, res) {
+        expect(err).to.not.be.null;
+        expect(res).to.have.status(404);
+        expect(res).to.be.json;
+        expect(res.body).to.include({"msg": "Api endpoint not available"});
         done();
       });
   });
@@ -119,7 +133,7 @@ describe('User registration', function(done) {
       });
   });
 
-  it('No information', function(done) {
+  it('No information given', function(done) {
     chai.request(server)
       .post('/api/v1/register')
       .end(function(err, res) {
@@ -131,71 +145,6 @@ describe('User registration', function(done) {
   });
 });
 
-
-var film11 = {
-  "film_id": 11,
-  "title": "ALAMO VIDEOTAPE",
-  "description": "A Boring Epistle of a Butler And a Cat who must Fight a Pastry Chef in A MySQL Convention",
-  "release_year": 2006,
-  "language_id": 1,
-  "original_language_id": null,
-  "rental_duration": 6,
-  "rental_rate": 0.99,
-  "length": 126,
-  "replacement_cost": 16.99,
-  "rating": "G",
-  "special_features": "Commentaries,Behind the Scenes",
-  "last_update": "2006-02-15T04:03:42.000Z"
-};
-
-var film30 = {
-  "film_id": 30,
-  "title": "ANYTHING SAVANNAH",
-  "description": "A Epic Story of a Pastry Chef And a Woman who must Chase a Feminist in An Abandoned Fun House",
-  "release_year": 2006,
-  "language_id": 1,
-  "original_language_id": null,
-  "rental_duration": 4,
-  "rental_rate": 2.99,
-  "length": 82,
-  "replacement_cost": 27.99,
-  "rating": "R",
-  "special_features": "Trailers,Deleted Scenes,Behind the Scenes",
-  "last_update": "2006-02-15T04:03:42.000Z"
-};
-
-var film9 = {
-  "film_id": 9,
-  "title": "ALABAMA DEVIL",
-  "description": "A Thoughtful Panorama of a Database Administrator And a Mad Scientist who must Outgun a Mad Scientist in A Jet Boat",
-  "release_year": 2006,
-  "language_id": 1,
-  "original_language_id": null,
-  "rental_duration": 3,
-  "rental_rate": 2.99,
-  "length": 114,
-  "replacement_cost": 21.99,
-  "rating": "PG-13",
-  "special_features": "Trailers,Deleted Scenes",
-  "last_update": "2006-02-15T04:03:42.000Z"
-};
-
-var film31 = {
-  "film_id": 31,
-  "title": "APACHE DIVINE",
-  "description": "A Awe-Inspiring Reflection of a Pastry Chef And a Teacher who must Overcome a Sumo Wrestler in A U-Boat",
-  "release_year": 2006,
-  "language_id": 1,
-  "original_language_id": null,
-  "rental_duration": 5,
-  "rental_rate": 4.99,
-  "length": 92,
-  "replacement_cost": 16.99,
-  "rating": "NC-17",
-  "special_features": "Commentaries,Deleted Scenes,Behind the Scenes",
-  "last_update": "2006-02-15T04:03:42.000Z"
-};
-
 describe('Get films', function() {
   it('Get all films', function(done) {
     chai.request(server)
@@ -204,7 +153,7 @@ describe('Get films', function() {
         expect(err).to.be.null;
         expect(res).to.have.status(200);
         expect(res.body).to.be.array();
-        expect(res.body).to.include.deep.members([film9, film11, film30, film31]);
+        expect(res.body).to.be.ofSize(1000);
         done();
       });
   });
@@ -217,7 +166,10 @@ describe('Get films', function() {
         expect(res).to.have.status(200);
         expect(res.body).to.be.array();
         expect(res.body).to.be.ofSize(20);
-        expect(res.body).to.include.deep.members([film11, film30]).but.not.include.deep.members([film9, film31]);
+        expect(res.body).to.not.contain.an.item.with.property('film_id', 9);
+        expect(res.body).to.contain.an.item.with.property('film_id', 11);
+        expect(res.body).to.contain.an.item.with.property('film_id', 30);
+        expect(res.body).to.not.contain.an.item.with.property('film_id', 31);
         done();
       });
   });
@@ -231,7 +183,7 @@ describe('Get a film', function() {
         expect(err).to.be.null;
         expect(res).to.have.status(200);
         expect(res.body).to.be.ofSize(1);
-        expect(res.body).to.include.deep.members([film9]);
+        expect(res.body).to.contain.an.item.with.property('film_id', 9);
         done();
       });
   });
@@ -243,21 +195,11 @@ describe('Get a film', function() {
         expect(err).to.be.null;
         expect(res).to.have.status(200);
         expect(res.body).to.be.ofSize(1);
-        expect(res.body).to.include.deep.members([film31]);
+        expect(res.body).to.contain.an.item.with.property('film_id', 31);
         done();
       });
   });
 });
-
-var rental988 = {
-  "rental_id": 988,
-  "rental_date": "2005-05-30T21:08:03.000Z",
-  "inventory_id": 1364,
-  "customer_id": 12,
-  "return_date": "2005-06-06T22:22:03.000Z",
-  "staff_id": 1,
-  "last_update": "2006-02-15T19:30:53.000Z"
-};
 
 var userEmail = "sgaweste@avans.nl";
 
@@ -271,7 +213,7 @@ describe('Get rentals of a user', function() {
         expect(err).to.be.null;
         expect(res).to.have.status(200);
         expect(res.body).to.be.ofSize(28);
-        //expect(res.body).to.have.nested.property("rental_id", 988);
+        expect(res.body).to.contain.an.item.with.property('rental_id', 988);
         done();
       });
   });
@@ -324,234 +266,223 @@ describe('Get rentals of a user', function() {
   });
 });
 
-// describe('Add a rental', function() {
-//   it('Succesful insert', function(done) {
-//     chai.request(server)
-//       .post('/api/v1/rentals/2/50')
-//       .set('W-Access-Token', auth.encodeToken(userEmail))
-//       .end(function(err, res) {
-//         expect(err).to.be.null;
-//         expect(res).to.have.status(200);
-//         expect(JSON.parse(res.text)).to.have.property("affectedRows", 1);
-//         done();
-//       });
-//   });
-//
-//   it('No acces token given', function(done) {
-//     chai.request(server)
-//       .post('api/v1/rentals/2/50')
-//       .end(function(err, res) {
-//         expect(err).to.not.be.null;
-//         expect(res).to.have.status(401);
-//         expect(res.body).to.include({"error": "Not authorised"});
-//         done();
-//       });
-//   });
-//
-//   it('String given as user ID', function(done) {
-//     chai.request(server)
-//       .post('api/v1/rentals/test/50')
-//       .set('W-Access-Token', auth.encodeToken(userEmail))
-//       .end(function(err, res) {
-//         expect(err).to.not.be.null;
-//         expect(res).to.have.status(401);
-//         expect(res.body).to.include({"error" : "No proper user ID given"});
-//         done();
-//       });
-//   });
-//
-//   it('User ID 0', function(done) {
-//     chai.request(server)
-//       .post('api/v1/rentals/0/50')
-//       .set('W-Access-Token', auth.encodeToken(userEmail))
-//       .end(function(err, res) {
-//         expect(err).to.not.be.null;
-//         expect(res).to.have.status(401);
-//         expect(res.body).to.include({"error" : "No proper user ID given"});
-//         done();
-//       });
-//   });
-//
-//   it('String given as inventory ID', function(done) {
-//     chai.request(server)
-//       .post('api/v1/rentals/2/test')
-//       .set('W-Access-Token', auth.encodeToken(userEmail))
-//       .end(function(err, res) {
-//         expect(err).to.not.be.null;
-//         expect(res).to.have.status(401);
-//         expect(res.body).to.include({"error" : "No proper inventory ID given"});
-//         done();
-//       });
-//   });
-//
-//   it('Inventory ID 0', function(done) {
-//     chai.request(server)
-//       .post('api/v1/rentals/2/0')
-//       .set('W-Access-Token', auth.encodeToken(userEmail))
-//       .end(function(err, res) {
-//         expect(err).to.not.be.null;
-//         expect(res).to.have.status(401);
-//         expect(res.body).to.include({"error" : "No proper inventory ID given"});
-//         done();
-//       });
-//   });
-// });
-//
-// describe('Extend a rental (change)', function() {
-//   it('Succesful extend', function(done) {
-//     chai.request(server)
-//       .put('/api/v1/rentals/2/50')
-//       .set('W-Access-Token', auth.encodeToken(userEmail))
-//       .end(function(err, res) {
-//         expect(err).to.be.null;
-//         expect(res).to.have.status(200);
-//         expect(JSON.parse(res.text)).to.have.property("affectedRows", 1);
-//         expect(JSON.parse(res.text)).to.have.property("changedRows", 1);
-//         done();
-//       });
-//   });
-//
-//   it('No acces token given', function(done) {
-//     chai.request(server)
-//       .put('api/v1/rentals/2/50')
-//       .end(function(err, res) {
-//         expect(err).to.not.be.null;
-//         expect(res).to.have.status(401);
-//         expect(res.body).to.include({"error": "Not authorised"});
-//         done();
-//       });
-//   });
-//
-//   it('String given as user ID', function(done) {
-//     chai.request(server)
-//       .put('api/v1/rentals/test/50')
-//       .set('W-Access-Token', auth.encodeToken(userEmail))
-//       .end(function(err, res) {
-//         expect(err).to.not.be.null;
-//         expect(res).to.have.status(401);
-//         expect(res.body).to.include({"error" : "No proper user ID given"});
-//         done();
-//       });
-//   });
-//
-//   it('User ID 0', function(done) {
-//     chai.request(server)
-//       .put('api/v1/rentals/0/50')
-//       .set('W-Access-Token', auth.encodeToken(userEmail))
-//       .end(function(err, res) {
-//         expect(err).to.not.be.null;
-//         expect(res).to.have.status(401);
-//         expect(res.body).to.include({"error" : "No proper user ID given"});
-//         done();
-//       });
-//   });
-//
-//   it('String given as inventory ID', function(done) {
-//     chai.request(server)
-//       .put('api/v1/rentals/2/test')
-//       .set('W-Access-Token', auth.encodeToken(userEmail))
-//       .end(function(err, res) {
-//         expect(err).to.not.be.null;
-//         expect(res).to.have.status(401);
-//         expect(res.body).to.include({"error" : "No proper inventory ID given"});
-//         done();
-//       });
-//   });
-//
-//   it('Inventory ID 0', function(done) {
-//     chai.request(server)
-//       .put('api/v1/rentals/2/0')
-//       .set('W-Access-Token', auth.encodeToken(userEmail))
-//       .end(function(err, res) {
-//         expect(err).to.not.be.null;
-//         expect(res).to.have.status(401);
-//         expect(res.body).to.include({"error" : "No proper inventory ID given"});
-//         done();
-//       });
-//   });
-// });
-//
-// describe('Remove a rental', function() {
-//   it('Succesful removal', function(done) {
-//     chai.request(server)
-//       .put('/api/v1/rentals/2/50')
-//       .set('W-Access-Token', auth.encodeToken(userEmail))
-//       .end(function(err, res) {
-//         expect(err).to.be.null;
-//         expect(res).to.have.status(200);
-//         expect(JSON.parse(res.text)).to.have.property("affectedRows", 1);
-//         done();
-//       });
-//   });
-//
-//   it('Rental is already removed', function(done) {
-//     chai.request(server)
-//       .put('/api/v1/rentals/2/50')
-//       .set('W-Access-Token', auth.encodeToken(userEmail))
-//       .end(function(err, res) {
-//         expect(err).to.be.null;
-//         expect(res).to.have.status(200);
-//         expect(JSON.parse(res.text)).to.have.property("affectedRows", 0);
-//         done();
-//       });
-//   });
-//
-//   it('No acces token given', function(done) {
-//     chai.request(server)
-//       .put('api/v1/rentals/2/50')
-//       .end(function(err, res) {
-//         expect(err).to.not.be.null;
-//         expect(res).to.have.status(401);
-//         expect(res.body).to.include({"error": "Not authorised"});
-//         done();
-//       });
-//   });
-//
-//   it('String given as user ID', function(done) {
-//     chai.request(server)
-//       .put('api/v1/rentals/test/50')
-//       .set('W-Access-Token', auth.encodeToken(userEmail))
-//       .end(function(err, res) {
-//         expect(err).to.not.be.null;
-//         expect(res).to.have.status(401);
-//         expect(res.body).to.include({"error" : "No proper user ID given"});
-//         done();
-//       });
-//   });
-//
-//   it('User ID 0', function(done) {
-//     chai.request(server)
-//       .put('api/v1/rentals/0/50')
-//       .set('W-Access-Token', auth.encodeToken(userEmail))
-//       .end(function(err, res) {
-//         expect(err).to.not.be.null;
-//         expect(res).to.have.status(401);
-//         expect(res.body).to.include({"error" : "No proper user ID given"});
-//         done();
-//       });
-//   });
-//
-//   it('String given as inventory ID', function(done) {
-//     chai.request(server)
-//       .put('api/v1/rentals/2/test')
-//       .set('W-Access-Token', auth.encodeToken(userEmail))
-//       .end(function(err, res) {
-//         expect(err).to.not.be.null;
-//         expect(res).to.have.status(401);
-//         expect(res.body).to.include({"error" : "No proper inventory ID given"});
-//         done();
-//       });
-//   });
-//
-//   it('Inventory ID 0', function(done) {
-//     chai.request(server)
-//       .put('api/v1/rentals/2/0')
-//       .set('W-Access-Token', auth.encodeToken(userEmail))
-//       .end(function(err, res) {
-//         expect(err).to.not.be.null;
-//         expect(res).to.have.status(401);
-//         expect(res.body).to.include({"error" : "No proper inventory ID given"});
-//         done();
-//       });
-//   });
-// });
+describe('Add a rental', function() {
+  it('Succesful insert', function(done) {
+    chai.request(server)
+      .post('/api/v1/rentals/2/50')
+      .set('W-Access-Token', auth.encodeToken(userEmail))
+      .end(function(err, res) {
+        expect(err).to.be.null;
+        expect(res).to.have.status(200);
+        expect(JSON.parse(res.text)).to.have.property("affectedRows", 1);
+        done();
+      });
+  });
+
+  it('String given as user ID', function(done) {
+    chai.request(server)
+      .post('/api/v1/rentals/test/50')
+      .set('W-Access-Token', auth.encodeToken(userEmail))
+      .end(function(err, res) {
+        expect(err).to.not.be.null;
+        expect(res).to.have.status(401);
+        expect(res.body).to.include({"error" : "No proper user ID given"});
+        done();
+      });
+  });
+
+  it('User ID 0', function(done) {
+    chai.request(server)
+      .post('/api/v1/rentals/0/50')
+      .set('W-Access-Token', auth.encodeToken(userEmail))
+      .end(function(err, res) {
+        expect(err).to.not.be.null;
+        expect(res).to.have.status(401);
+        expect(res.body).to.include({"error" : "No proper user ID given"});
+        done();
+      });
+  });
+
+  it('String given as inventory ID', function(done) {
+    chai.request(server)
+      .post('/api/v1/rentals/2/test')
+      .set('W-Access-Token', auth.encodeToken(userEmail))
+      .end(function(err, res) {
+        expect(err).to.not.be.null;
+        expect(res).to.have.status(401);
+        expect(res.body).to.include({"error" : "No proper inventory ID given"});
+        done();
+      });
+  });
+
+  it('Inventory ID 0', function(done) {
+    chai.request(server)
+      .post('/api/v1/rentals/2/0')
+      .set('W-Access-Token', auth.encodeToken(userEmail))
+      .end(function(err, res) {
+        expect(err).to.not.be.null;
+        expect(res).to.have.status(401);
+        expect(res.body).to.include({"error" : "No proper inventory ID given"});
+        done();
+      });
+  });
+});
+
+describe('Extend a rental (change)', function() {
+  it('Succesful extend', function(done) {
+    chai.request(server)
+      .put('/api/v1/rentals/2/50')
+      .set('W-Access-Token', auth.encodeToken(userEmail))
+      .end(function(err, res) {
+        expect(err).to.be.null;
+        expect(res).to.have.status(200);
+        expect(JSON.parse(res.text)).to.have.property("affectedRows", 1);
+        expect(JSON.parse(res.text)).to.have.property("changedRows", 1);
+        done();
+      });
+  });
+
+  it('No acces token given', function(done) {
+    chai.request(server)
+      .put('/api/v1/rentals/2/50')
+      .end(function(err, res) {
+        expect(err).to.not.be.null;
+        expect(res).to.have.status(401);
+        expect(res.body).to.include({"error": "Not authorised"});
+        done();
+      });
+  });
+
+  it('String given as user ID', function(done) {
+    chai.request(server)
+      .put('/api/v1/rentals/test/50')
+      .set('W-Access-Token', auth.encodeToken(userEmail))
+      .end(function(err, res) {
+        expect(err).to.not.be.null;
+        expect(res).to.have.status(401);
+        expect(res.body).to.include({"error" : "No proper user ID given"});
+        done();
+      });
+  });
+
+  it('User ID 0', function(done) {
+    chai.request(server)
+      .put('/api/v1/rentals/0/50')
+      .set('W-Access-Token', auth.encodeToken(userEmail))
+      .end(function(err, res) {
+        expect(err).to.not.be.null;
+        expect(res).to.have.status(401);
+        expect(res.body).to.include({"error" : "No proper user ID given"});
+        done();
+      });
+  });
+
+  it('String given as inventory ID', function(done) {
+    chai.request(server)
+      .put('/api/v1/rentals/2/test')
+      .set('W-Access-Token', auth.encodeToken(userEmail))
+      .end(function(err, res) {
+        expect(err).to.not.be.null;
+        expect(res).to.have.status(401);
+        expect(res.body).to.include({"error" : "No proper inventory ID given"});
+        done();
+      });
+  });
+
+  it('Inventory ID 0', function(done) {
+    chai.request(server)
+      .put('/api/v1/rentals/2/0')
+      .set('W-Access-Token', auth.encodeToken(userEmail))
+      .end(function(err, res) {
+        expect(err).to.not.be.null;
+        expect(res).to.have.status(401);
+        expect(res.body).to.include({"error" : "No proper inventory ID given"});
+        done();
+      });
+  });
+});
+
+describe('Remove a rental', function() {
+  it('Succesful removal', function(done) {
+    chai.request(server)
+      .delete('/api/v1/rentals/2/50')
+      .set('W-Access-Token', auth.encodeToken(userEmail))
+      .end(function(err, res) {
+        expect(err).to.be.null;
+        expect(res).to.have.status(200);
+        expect(JSON.parse(res.text)).to.have.property("affectedRows", 1);
+        done();
+      });
+  });
+
+  it('Rental is already removed', function(done) {
+    chai.request(server)
+      .delete('/api/v1/rentals/2/50')
+      .set('W-Access-Token', auth.encodeToken(userEmail))
+      .end(function(err, res) {
+        expect(err).to.be.null;
+        expect(res).to.have.status(200);
+        expect(JSON.parse(res.text)).to.have.property("affectedRows", 0);
+        done();
+      });
+  });
+
+  it('No acces token given', function(done) {
+    chai.request(server)
+      .delete('/api/v1/rentals/2/50')
+      .end(function(err, res) {
+        expect(err).to.not.be.null;
+        expect(res).to.have.status(401);
+        expect(res.body).to.include({"error": "Not authorised"});
+        done();
+      });
+  });
+
+  it('String given as user ID', function(done) {
+    chai.request(server)
+      .delete('/api/v1/rentals/test/50')
+      .set('W-Access-Token', auth.encodeToken(userEmail))
+      .end(function(err, res) {
+        expect(err).to.not.be.null;
+        expect(res).to.have.status(401);
+        expect(res.body).to.include({"error" : "No proper user ID given"});
+        done();
+      });
+  });
+
+  it('User ID 0', function(done) {
+    chai.request(server)
+      .delete('/api/v1/rentals/0/50')
+      .set('W-Access-Token', auth.encodeToken(userEmail))
+      .end(function(err, res) {
+        expect(err).to.not.be.null;
+        expect(res).to.have.status(401);
+        expect(res.body).to.include({"error" : "No proper user ID given"});
+        done();
+      });
+  });
+
+  it('String given as inventory ID', function(done) {
+    chai.request(server)
+      .delete('/api/v1/rentals/2/test')
+      .set('W-Access-Token', auth.encodeToken(userEmail))
+      .end(function(err, res) {
+        expect(err).to.not.be.null;
+        expect(res).to.have.status(401);
+        expect(res.body).to.include({"error" : "No proper inventory ID given"});
+        done();
+      });
+  });
+
+  it('Inventory ID 0', function(done) {
+    chai.request(server)
+      .delete('/api/v1/rentals/2/0')
+      .set('W-Access-Token', auth.encodeToken(userEmail))
+      .end(function(err, res) {
+        expect(err).to.not.be.null;
+        expect(res).to.have.status(401);
+        expect(res.body).to.include({"error" : "No proper inventory ID given"});
+        done();
+      });
+  });
+});

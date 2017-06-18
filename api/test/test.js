@@ -212,8 +212,8 @@ describe('Get rentals of a user', function() {
       .end(function(err, res) {
         expect(err).to.be.null;
         expect(res).to.have.status(200);
-        expect(res.body).to.be.ofSize(28);
-        expect(res.body).to.contain.an.item.with.property('rental_id', 988);
+        expect(res.body).to.be.ofSize(1);
+        expect(res.body).to.contain.an.item.with.property('inventory_id', 988);
         done();
       });
   });
@@ -269,7 +269,7 @@ describe('Get rentals of a user', function() {
 describe('Add a rental', function() {
   it('Succesful insert', function(done) {
     chai.request(server)
-      .post('/api/v1/rentals/2/50')
+      .post('/api/v1/rentals/14/50')
       .set('W-Access-Token', auth.encodeToken(userEmail))
       .end(function(err, res) {
         expect(err).to.be.null;
@@ -305,7 +305,7 @@ describe('Add a rental', function() {
 
   it('String given as inventory ID', function(done) {
     chai.request(server)
-      .post('/api/v1/rentals/2/test')
+      .post('/api/v1/rentals/14/test')
       .set('W-Access-Token', auth.encodeToken(userEmail))
       .end(function(err, res) {
         expect(err).to.not.be.null;
@@ -317,7 +317,7 @@ describe('Add a rental', function() {
 
   it('Inventory ID 0', function(done) {
     chai.request(server)
-      .post('/api/v1/rentals/2/0')
+      .post('/api/v1/rentals/14/0')
       .set('W-Access-Token', auth.encodeToken(userEmail))
       .end(function(err, res) {
         expect(err).to.not.be.null;
@@ -331,20 +331,20 @@ describe('Add a rental', function() {
 describe('Extend a rental (change)', function() {
   it('Succesful extend', function(done) {
     chai.request(server)
-      .put('/api/v1/rentals/2/50')
+      .put('/api/v1/rentals/14/50')
       .set('W-Access-Token', auth.encodeToken(userEmail))
       .end(function(err, res) {
         expect(err).to.be.null;
         expect(res).to.have.status(200);
-        expect(JSON.parse(res.text)).to.have.property("affectedRows", 1);
-        expect(JSON.parse(res.text)).to.have.property("changedRows", 1);
+        expect(JSON.parse(res.text).affectedRows).to.not.equal(0);
+        expect(JSON.parse(res.text).changedRows).to.not.equal(0);
         done();
       });
   });
 
   it('No acces token given', function(done) {
     chai.request(server)
-      .put('/api/v1/rentals/2/50')
+      .put('/api/v1/rentals/14/50')
       .end(function(err, res) {
         expect(err).to.not.be.null;
         expect(res).to.have.status(401);
@@ -379,7 +379,7 @@ describe('Extend a rental (change)', function() {
 
   it('String given as inventory ID', function(done) {
     chai.request(server)
-      .put('/api/v1/rentals/2/test')
+      .put('/api/v1/rentals/14/test')
       .set('W-Access-Token', auth.encodeToken(userEmail))
       .end(function(err, res) {
         expect(err).to.not.be.null;
@@ -391,7 +391,7 @@ describe('Extend a rental (change)', function() {
 
   it('Inventory ID 0', function(done) {
     chai.request(server)
-      .put('/api/v1/rentals/2/0')
+      .put('/api/v1/rentals/14/0')
       .set('W-Access-Token', auth.encodeToken(userEmail))
       .end(function(err, res) {
         expect(err).to.not.be.null;
@@ -405,31 +405,20 @@ describe('Extend a rental (change)', function() {
 describe('Remove a rental', function() {
   it('Succesful removal', function(done) {
     chai.request(server)
-      .delete('/api/v1/rentals/2/50')
+      .delete('/api/v1/rentals/14/50')
       .set('W-Access-Token', auth.encodeToken(userEmail))
       .end(function(err, res) {
         expect(err).to.be.null;
         expect(res).to.have.status(200);
-        expect(JSON.parse(res.text)).to.have.property("affectedRows", 1);
-        done();
-      });
-  });
-
-  it('Rental is already removed', function(done) {
-    chai.request(server)
-      .delete('/api/v1/rentals/2/50')
-      .set('W-Access-Token', auth.encodeToken(userEmail))
-      .end(function(err, res) {
-        expect(err).to.be.null;
-        expect(res).to.have.status(200);
-        expect(JSON.parse(res.text)).to.have.property("affectedRows", 0);
+        expect(JSON.parse(res.text).affectedRows).to.not.equal(0);
+        expect(JSON.parse(res.text).changedRows).to.not.equal(0);
         done();
       });
   });
 
   it('No acces token given', function(done) {
     chai.request(server)
-      .delete('/api/v1/rentals/2/50')
+      .delete('/api/v1/rentals/14/50')
       .end(function(err, res) {
         expect(err).to.not.be.null;
         expect(res).to.have.status(401);
@@ -464,7 +453,7 @@ describe('Remove a rental', function() {
 
   it('String given as inventory ID', function(done) {
     chai.request(server)
-      .delete('/api/v1/rentals/2/test')
+      .delete('/api/v1/rentals/14/test')
       .set('W-Access-Token', auth.encodeToken(userEmail))
       .end(function(err, res) {
         expect(err).to.not.be.null;
@@ -476,7 +465,7 @@ describe('Remove a rental', function() {
 
   it('Inventory ID 0', function(done) {
     chai.request(server)
-      .delete('/api/v1/rentals/2/0')
+      .delete('/api/v1/rentals/14/0')
       .set('W-Access-Token', auth.encodeToken(userEmail))
       .end(function(err, res) {
         expect(err).to.not.be.null;

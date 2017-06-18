@@ -30,7 +30,7 @@ app.all('*', function(req, res, next) {
 });
 
 app.listen(port, function(){
-  console.log('The magic happens at http://localhost:' + port);
+  console.log('The magic happens at https://programmeren-tent-4.herokuapp.com:');
 });
 
 module.exports = app;

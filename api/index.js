@@ -11,7 +11,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.all('*', function(req, res, next){
-  console.log(req.method + " " + req.url);
+  //console.log(req.method + " " + req.url);
   next();
 });
 

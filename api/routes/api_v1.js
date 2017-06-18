@@ -147,7 +147,7 @@ router.post('/rentals/:userid/:inventoryid', function (req, res) {
 
   if(isNaN(userID) || userID == 0) {
     res.status(401).json({"error" : "No proper user ID given"});
-  } else if (isNaN(inventoryID) || userID == 0) {
+  } else if (isNaN(inventoryID) || inventoryID == 0) {
     res.status(401).json({"error" : "No proper inventory ID given"});
   } else {
     var query = 'INSERT INTO rental (inventory_id, customer_id, rental_date, return_date, staff_id) VALUES ' +
@@ -161,7 +161,7 @@ router.post('/rentals/:userid/:inventoryid', function (req, res) {
     	  if (error) {
           throw error;
         }
-    	  res.status(200).end(JSON.stringify(rows));
+    	  res.status(200).json(rows);
     	});
     });
   }
@@ -174,7 +174,7 @@ router.put('/rentals/:userid/:inventoryid', function (req, res) {
 
   if(isNaN(userID) || userID == 0) {
     res.status(401).json({"error" : "No proper user ID given"});
-  } else if (isNaN(inventoryID) || userID == 0) {
+  } else if (isNaN(inventoryID) || inventoryID == 0) {
     res.status(401).json({"error" : "No proper inventory ID given"});
   } else {
     pool.getConnection( function(error, connection) {
@@ -195,7 +195,7 @@ router.put('/rentals/:userid/:inventoryid', function (req, res) {
           	  if (error) {
                 throw error;
               }
-          	  res.status(200).end(JSON.stringify(rows));
+          	  res.status(200).json(rows);
           	});
           });
 
@@ -214,7 +214,7 @@ router.delete('/rentals/:userid/:inventoryid', function (req, res) {
 
   if(isNaN(userID) || userID == 0) {
     res.status(401).json({"error" : "No proper user ID given"});
-  } else if (isNaN(inventoryID) || userID == 0) {
+  } else if (isNaN(inventoryID) || inventoryID == 0) {
     res.status(401).json({"error" : "No proper inventory ID given"});
   } else {
     pool.getConnection( function(error, connection) {
@@ -224,7 +224,7 @@ router.delete('/rentals/:userid/:inventoryid', function (req, res) {
     	  if (error) {
           throw error;
         }
-    	  res.status(200).end(JSON.stringify(rows));
+    	  res.status(200).json(rows);
     	});
     });
   }
@@ -265,9 +265,7 @@ router.get('/films/:id?', function (req, res) {
 
 router.get('*', function(request, response) {
   response.status(404);
-  response.json({
-    "msg": "Api endpoint not available"
-  });
+  response.json({"msg": "Api endpoint not available"});
 });
 
 

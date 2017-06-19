@@ -16,7 +16,7 @@ public class VolleyRequestQueue {
     private static Context mCtx;
 
     private VolleyRequestQueue(Context context) {
-        mCtx = context;
+        mCtx = context.getApplicationContext();
         mRequestQueue = getRequestQueue();
     }
 

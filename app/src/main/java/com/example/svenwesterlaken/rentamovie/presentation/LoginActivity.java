@@ -4,109 +4,112 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.svenwesterlaken.rentamovie.R;
-import com.example.svenwesterlaken.rentamovie.api.VolleyRequestQueue;
+import com.example.svenwesterlaken.rentamovie.api.LoginRequest;
 import com.example.svenwesterlaken.rentamovie.util.Config;
+import com.example.svenwesterlaken.rentamovie.util.LoginUtil;
 import com.example.svenwesterlaken.rentamovie.util.Message;
-import com.example.svenwesterlaken.rentamovie.util.TokenUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import io.paperdb.Paper;
+
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AppCompatActivity {
-    private EditText editTextEmail;
-    private EditText editTextPassword;
-    private String Emailtext;
-    private String Passwordtext;
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener, LoginRequest.LoginRequestListener {
+    private EditText emailET;
+    private EditText passwordET;
+    private Button loginBTN;
+    private Button registerBTN;
+    private Button guestBTN;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        Paper.init(getApplicationContext());
+        if(LoginUtil.isSuccesfullyLoggedIn()) {
+            onLoginApproved();
+        } else {
+            setContentView(R.layout.activity_login);
 
-        if (TokenUtil.tokenAvailable(getApplicationContext())) {
-            if (TokenUtil.tokenValid(getApplicationContext())) {
-                Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(i);
-                finish();
-            }
+            emailET = (EditText) findViewById(R.id.login_ET_email);
+            passwordET = (EditText) findViewById(R.id.login_ET_password);
+            loginBTN = (Button) findViewById(R.id.login_BTN_login);
+            registerBTN = (Button) findViewById(R.id.login_BTN_register);
+            guestBTN = (Button) findViewById(R.id.login_BTN_guest);
+
+            loginBTN.setOnClickListener(this);
+            registerBTN.setOnClickListener(this);
+            guestBTN.setOnClickListener(this);
         }
-
-        editTextEmail = (EditText) findViewById(R.id.login_ET_email);
-        editTextPassword = (EditText) findViewById(R.id.login_ET_password);
-        Button btnLogin = (Button) findViewById(R.id.login_BTN_login);
-
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Emailtext = editTextEmail.getText().toString();
-                Passwordtext = editTextPassword.getText().toString();
-
-                if (!Emailtext.isEmpty() || !Passwordtext.isEmpty()) {
-                    handleLogin(Emailtext, Passwordtext);
-                }
-            }
-        });
     }
 
     private void handleLogin(String email, String password) {
+        switchButtons(false);
         String body = "{\"email\":\"" + email + "\",\"password\":\"" + password + "\"}";
-        Log.i("handleLogin ", body);
 
         try {
             JSONObject jsonBody = new JSONObject(body);
-            JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.POST, Config.URL_LOGIN, jsonBody, new Response.Listener<JSONObject>() {
-
-                @Override
-                public void onResponse(JSONObject response) {
-                    try {
-                        String token = response.getString("token");
-//                                long expirationTime = response.getLong("expire");
-//                                String userMail = response.getString("mail");
-                        if (token == null) {
-                            throw new Exception("Token not found.");
-                        }
-
-//                                if (Long.valueOf(expirationTime) == null) {
-//                                    throw new Exception("Expiration not found");
-//                                }
-
-//                                if (String.valueOf(userMail) == null) {
-//                                    throw new Exception("User Mail not found");
-//                                }
-                        TokenUtil.saveToken(getApplicationContext(), token);
-                        Message.display(getApplicationContext(), "Met succes ingelogd.");
-                        Intent main = new Intent(getApplicationContext(), MainActivity.class);
-                        startActivity(main);
-                        finish();
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Message.error(getApplicationContext(), error);
-                }
-            });
-            jsObjRequest.setRetryPolicy(new DefaultRetryPolicy(1500, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-            VolleyRequestQueue.getInstance(this).addToRequestQueue(jsObjRequest);
+            LoginRequest request = new LoginRequest(getApplicationContext(), this);
+            request.handleLogin(jsonBody);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.login_BTN_login) {
+            String email = emailET.getText().toString();
+            String password = passwordET.getText().toString();
+
+            if (!email.isEmpty() || !password.isEmpty()) {
+                handleLogin(email, password);
+            }
+        } else if (v.getId() == R.id.login_BTN_register) {
+            Intent i = new Intent(this, RegisterActivity.class);
+            startActivityForResult(i, Config.REGISTER_REQUEST);
+        } else if (v.getId() == R.id.login_BTN_guest) {
+            onLoginApproved();
+        }
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Config.REGISTER_REQUEST && resultCode == RESULT_OK) {
+            String password = data.getExtras().getString("password");
+            String email = data.getExtras().getString("email");
+
+            if(password != null && email != null) {
+                handleLogin(email, password);
+            }
+
+        }
+    }
+
+    private void switchButtons(boolean value) {
+        loginBTN.setEnabled(value);
+        registerBTN.setEnabled(value);
+        guestBTN.setEnabled(value);
+    }
+
+    @Override
+    public void onLoginApproved() {
+        Intent i = new Intent(this, MainActivity.class);
+        startActivity(i);
+        finish();
+    }
+
+    @Override
+    public void onLoginErrors(String message) {
+        Message.display(this, message);
+        switchButtons(true);
     }
 }

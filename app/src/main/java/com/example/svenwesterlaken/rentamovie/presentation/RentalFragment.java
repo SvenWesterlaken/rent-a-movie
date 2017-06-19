@@ -13,6 +13,7 @@ import com.example.svenwesterlaken.rentamovie.R;
 import com.example.svenwesterlaken.rentamovie.api.RentalRequest;
 import com.example.svenwesterlaken.rentamovie.domain.Rental;
 import com.example.svenwesterlaken.rentamovie.logic.RentalListAdapter;
+import com.example.svenwesterlaken.rentamovie.util.LoginUtil;
 import com.example.svenwesterlaken.rentamovie.util.Message;
 
 import java.util.ArrayList;
@@ -33,21 +34,25 @@ public class RentalFragment extends Fragment implements RentalRequest.RentalRequ
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_rental_list, container, false);
 
-        Context context = view.getContext();
-        RecyclerView rentalList = (RecyclerView) view.findViewById(R.id.rentals_RV_content);
-        rentalList.setItemAnimator(new SlideInRightAnimator());
-        rentalList.getItemAnimator().setAddDuration(300);
-        rentalList.getItemAnimator().setRemoveDuration(200);
+        if(LoginUtil.isGuest()) {
+            onRentalsErrors("Not available for guests");
+        } else {
+            Context context = view.getContext();
+            RecyclerView rentalList = (RecyclerView) view.findViewById(R.id.rentals_RV_content);
+            rentalList.setItemAnimator(new SlideInRightAnimator());
+            rentalList.getItemAnimator().setAddDuration(300);
+            rentalList.getItemAnimator().setRemoveDuration(200);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        rentalList.setLayoutManager(layoutManager);
+            LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+            layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+            rentalList.setLayoutManager(layoutManager);
 
-        rentals = new ArrayList<>();
-        getRentals();
+            rentals = new ArrayList<>();
+            getRentals();
 
-        rentalAdapter = new RentalListAdapter(rentals, context);
-        rentalList.setAdapter(rentalAdapter);
+            rentalAdapter = new RentalListAdapter(rentals, context);
+            rentalList.setAdapter(rentalAdapter);
+        }
 
         return view;
     }
@@ -65,7 +70,7 @@ public class RentalFragment extends Fragment implements RentalRequest.RentalRequ
 
     @Override
     public void onRentalsAvailable(List<Rental> rentals) {
-        this.rentals = rentals;
+        this.rentals.addAll(this.rentals.size(), rentals);
         rentalAdapter.notifyItemRangeInserted(0, rentals.size());
     }
 

@@ -1,8 +1,9 @@
 package com.example.svenwesterlaken.rentamovie.api;
 
 import android.content.Context;
-import android.util.Log;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -19,12 +20,12 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 
 public class RentalRequest implements Response.Listener<JSONArray>, Response.ErrorListener{
     private Context context;
     private RentalRequestListener listener;
-    public final String TAG = this.getClass().getSimpleName();
 
     public RentalRequest(Context context, RentalRequestListener listener) {
         this.context = context;
@@ -34,14 +35,24 @@ public class RentalRequest implements Response.Listener<JSONArray>, Response.Err
     public void handleGetAllRentals() {
         String url = Config.URL_RENTAL + LoginUtil.getUserID();
 
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null, this, this);
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null, this, this) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return LoginUtil.getAuthHeaders();
+            }
+        };
         VolleyRequestQueue.getInstance(context).addToRequestQueue(jsonArrayRequest);
     }
 
     @Override
     public void onErrorResponse(VolleyError error) {
-        Log.e(TAG, error.toString());
-        listener.onRentalsErrors("Something went wrong");
+        NetworkResponse nr = error.networkResponse;
+        if(nr.statusCode == 404) {
+            listener.onRentalsErrors("No rentals found");
+        } else {
+            listener.onRentalsErrors("Something went wrong");
+        }
+
     }
 
     @Override

@@ -56,12 +56,14 @@ public class RentalListAdapter extends RecyclerView.Adapter<RentalListAdapter.Re
 
     public static class RentalViewHolder extends RecyclerView.ViewHolder {
         private TextView title;
+        private TextView available;
         private View view;
 
         public RentalViewHolder(View v) {
             super(v);
             this.view = v;
             this.title = (TextView) v.findViewById(R.id.rentals_TV_title);
+            this.available = (TextView) v.findViewById(R.id.rentals_TV_available);
         }
     }
 }

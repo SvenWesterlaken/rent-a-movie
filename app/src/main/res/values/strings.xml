@@ -22,4 +22,6 @@
     <string name="title_activity_rental_detailed">Rental</string>
     <string name="rental_btn_handin">Hand in</string>
     <string name="rental_btn_extend">extend</string>
+    <string name="inventory_available">Available</string>
+    <string name="inventory_unavailable">Unavailable</string>
 </resources>

@@ -1,9 +1,9 @@
 package com.example.svenwesterlaken.rentamovie.api;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -37,8 +37,15 @@ public class LoginRequest implements Response.Listener<JSONObject>, Response.Err
 
     @Override
     public void onErrorResponse(VolleyError error) {
-        Log.e(TAG, error.toString());
-        listener.onLoginErrors("Something went wrong");
+        NetworkResponse nr = error.networkResponse;
+
+        if(nr.statusCode == 401) {
+            listener.onLoginErrors("Wrong credentials");
+        } else {
+            listener.onLoginErrors("Something went wrong");
+        }
+
+
     }
 
     @Override

@@ -12,6 +12,8 @@ import com.example.svenwesterlaken.rentamovie.R;
 import com.example.svenwesterlaken.rentamovie.domain.Movie;
 import com.example.svenwesterlaken.rentamovie.presentation.DetailedMovieActivity;
 
+import org.w3c.dom.Text;
+
 import java.util.List;
 
 /**
@@ -38,6 +40,8 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
     public void onBindViewHolder(MovieViewHolder holder, int position) {
         final Movie movie = movies.get(position);
         holder.title.setText(movie.getTitle());
+        holder.rating.setText(movie.getRating());
+        holder.releaseYear.setText(movie.getReleaseYear());
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,12 +61,16 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
 
     public static class MovieViewHolder extends RecyclerView.ViewHolder {
         private TextView title;
+        private TextView releaseYear;
+        private TextView rating;
         private View view;
 
         public MovieViewHolder(View v) {
             super(v);
             this.view = v;
             this.title = (TextView) v.findViewById(R.id.movies_TV_title);
+            this.releaseYear = (TextView) v.findViewById(R.id.movies_TV_release);
+            this.rating =(TextView) v.findViewById(R.id.movies_TV_rating);
         }
     }
 }

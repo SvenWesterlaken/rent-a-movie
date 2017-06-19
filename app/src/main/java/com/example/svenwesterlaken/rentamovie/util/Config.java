@@ -11,6 +11,7 @@ public class Config {
     public static final String URL_REGISTER = BASIC_URL + "/api/v1/register";
     public static final String URL_FILMS = BASIC_URL + "/api/v1/films?count=20&offset=0";
     public static final String URL_RENTAL = BASIC_URL + "/api/v1/rentals";
+    public static final String URL_INVENTORY = BASIC_URL + "/api/v1/inventory/film_id" + 5;
 
 }
 

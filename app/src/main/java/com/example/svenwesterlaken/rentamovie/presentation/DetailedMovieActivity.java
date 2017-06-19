@@ -43,21 +43,23 @@ public class DetailedMovieActivity extends AppCompatActivity implements Inventor
         title.setText(movie.getTitle());
         rating.setText(movie.getRating());
         release.setText(movie.getReleaseYear());
-        
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getApplication());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        inventoryList.setLayoutManager(layoutManager);
         inventories = new ArrayList<>();
         getInventories();
         inventoryAdapter = new InventoryListAdapter(inventories);
         inventoryList.setAdapter(inventoryAdapter);
 
 
+
+
+
+
     }
 
     private void getInventories() {
-        if (inventories.isEmpty()) {
-            int size = inventories.size();
-            inventories.clear();
-            inventoryAdapter.notifyItemRangeInserted(0, size);
-        }
 
         InventoryRequest request = new InventoryRequest(getApplicationContext(), this);
         request.handleGetAllInventories();

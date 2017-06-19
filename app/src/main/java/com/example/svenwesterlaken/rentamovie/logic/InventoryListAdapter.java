@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.example.svenwesterlaken.rentamovie.R;
 import com.example.svenwesterlaken.rentamovie.domain.Inventory;
+import com.example.svenwesterlaken.rentamovie.domain.Movie;
 import com.example.svenwesterlaken.rentamovie.domain.Rental;
 
 import java.util.List;
@@ -34,8 +35,8 @@ public class InventoryListAdapter extends RecyclerView.Adapter<InventoryListAdap
     @Override
     public void onBindViewHolder(InventoryViewHolder holder, int position) {
         final Inventory inventory = inventories.get(position);
-//        holder.id.setText(inventory.getInventoryID());
-        holder.user.setText(inventory.getFilmID());
+        holder.id.setText(String.valueOf(inventory.getInventoryID()));
+        holder.user.setText(String.valueOf(inventory.getFilmID()));
 //        holder.status.setText(rentals.get);
 
     }
@@ -53,7 +54,7 @@ public class InventoryListAdapter extends RecyclerView.Adapter<InventoryListAdap
         public InventoryViewHolder(View v) {
             super(v);
             this.view = v;
-//            this.title = (TextView) v.findViewById(R.id.DMI_TV_title);
+            this.id = (TextView) v.findViewById(R.id.DMI_TV_title);
             this.user = (TextView) v.findViewById(R.id.DMI_TV_statusUser);
         }
     }

@@ -7,8 +7,9 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.example.svenwesterlaken.rentamovie.domain.Movie;
+import com.example.svenwesterlaken.rentamovie.domain.Rental;
 import com.example.svenwesterlaken.rentamovie.util.Config;
+import com.example.svenwesterlaken.rentamovie.util.LoginUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
@@ -20,38 +21,40 @@ import java.util.Arrays;
 import java.util.List;
 
 
-public class MoviesRequest implements Response.Listener<JSONArray>, Response.ErrorListener{
+public class RentalRequest implements Response.Listener<JSONArray>, Response.ErrorListener{
     private Context context;
-    private MoviesRequestListener listener;
+    private RentalRequestListener listener;
     public final String TAG = this.getClass().getSimpleName();
 
-    public MoviesRequest(Context context, MoviesRequestListener listener) {
+    public RentalRequest(Context context, RentalRequestListener listener) {
         this.context = context;
         this.listener = listener;
     }
 
-    public void handleGetAllMovies() {
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, Config.URL_FILMS, null, this, this);
+    public void handleGetAllRentals() {
+        String url = Config.URL_RENTAL + LoginUtil.getUserID();
+
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null, this, this);
         VolleyRequestQueue.getInstance(context).addToRequestQueue(jsonArrayRequest);
     }
 
     @Override
     public void onErrorResponse(VolleyError error) {
         Log.e(TAG, error.toString());
-        listener.onMovieErrors("Something went wrong");
+        listener.onRentalsErrors("Something went wrong");
     }
 
     @Override
     public void onResponse(JSONArray response) {
         JsonArray result = (JsonArray) new JsonParser().parse(response.toString());
-        List<Movie> movies = new ArrayList<>(Arrays.asList(new Gson().fromJson(result, Movie[].class)));
-        listener.onMoviesAvailable(movies);
+        List<Rental> rentals = new ArrayList<>(Arrays.asList(new Gson().fromJson(result, Rental[].class)));
+        listener.onRentalsAvailable(rentals);
     }
 
 
-    public interface MoviesRequestListener {
-            void onMoviesAvailable(List<Movie> movies);
-            void onMovieErrors(String message);
+    public interface RentalRequestListener {
+            void onRentalsAvailable(List<Rental> rentals);
+            void onRentalsErrors(String message);
         }
     }
 

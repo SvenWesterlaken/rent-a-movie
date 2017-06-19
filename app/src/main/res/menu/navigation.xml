@@ -2,18 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/navigation_home"
-        android:icon="@drawable/format_list_bulleted_type"
-        android:title="@string/title_home" />
-
-    <item
-        android:id="@+id/navigation_dashboard"
+        android:id="@+id/navigation_movies"
         android:icon="@drawable/movie"
-        android:title="@string/title_dashboard" />
+        android:title="@string/title_movies" />
 
     <item
-        android:id="@+id/navigation_notifications"
-        android:icon="@drawable/settings"
-        android:title="@string/title_notifications" />
-
+        android:id="@+id/navigation_myrentals"
+        android:icon="@drawable/format_list_bulleted_type"
+        android:title="@string/title_rentals" />
 </menu>

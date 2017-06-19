@@ -10,19 +10,19 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.svenwesterlaken.rentamovie.R;
-import com.example.svenwesterlaken.rentamovie.api.MoviesRequest;
-import com.example.svenwesterlaken.rentamovie.domain.Movie;
-import com.example.svenwesterlaken.rentamovie.logic.MovieListAdapter;
+import com.example.svenwesterlaken.rentamovie.api.RentalRequest;
+import com.example.svenwesterlaken.rentamovie.domain.Rental;
+import com.example.svenwesterlaken.rentamovie.logic.RentalListAdapter;
 import com.example.svenwesterlaken.rentamovie.util.Message;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
+import jp.wasabeef.recyclerview.animators.SlideInRightAnimator;
 
-public class RentalFragment extends Fragment implements MoviesRequest.MoviesRequestListener {
-    private List<Movie> movies;
-    private MovieListAdapter movieAdapter;
+public class RentalFragment extends Fragment implements RentalRequest.RentalRequestListener {
+    private List<Rental> rentals;
+    private RentalListAdapter rentalAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -31,46 +31,46 @@ public class RentalFragment extends Fragment implements MoviesRequest.MoviesRequ
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_movie_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_rental_list, container, false);
 
         Context context = view.getContext();
-        RecyclerView movieList = (RecyclerView) view.findViewById(R.id.movies_RV_content);
-        movieList.setItemAnimator(new SlideInLeftAnimator());
-        movieList.getItemAnimator().setAddDuration(300);
-        movieList.getItemAnimator().setRemoveDuration(200);
+        RecyclerView rentalList = (RecyclerView) view.findViewById(R.id.rentals_RV_content);
+        rentalList.setItemAnimator(new SlideInRightAnimator());
+        rentalList.getItemAnimator().setAddDuration(300);
+        rentalList.getItemAnimator().setRemoveDuration(200);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        movieList.setLayoutManager(layoutManager);
+        rentalList.setLayoutManager(layoutManager);
 
-        movies = new ArrayList<>();
-        getMovies();
+        rentals = new ArrayList<>();
+        getRentals();
 
-        movieAdapter = new MovieListAdapter(movies, context);
-        movieList.setAdapter(movieAdapter);
+        rentalAdapter = new RentalListAdapter(rentals, context);
+        rentalList.setAdapter(rentalAdapter);
 
         return view;
     }
 
-    public void getMovies(){
-        if(!movies.isEmpty()) {
-            int size = movies.size();
-            movies.clear();
-            movieAdapter.notifyItemRangeRemoved(0, size);
+    public void getRentals(){
+        if(!rentals.isEmpty()) {
+            int size = rentals.size();
+            rentals.clear();
+            rentalAdapter.notifyItemRangeRemoved(0, size);
         }
 
-        MoviesRequest request = new MoviesRequest(getContext(), this);
-        request.handleGetAllMovies();
+        RentalRequest request = new RentalRequest(getContext(), this);
+        request.handleGetAllRentals();
     }
 
     @Override
-    public void onMoviesAvailable(List<Movie> movies) {
-        this.movies = movies;
-        movieAdapter.notifyItemRangeInserted(0, movies.size());
+    public void onRentalsAvailable(List<Rental> rentals) {
+        this.rentals = rentals;
+        rentalAdapter.notifyItemRangeInserted(0, rentals.size());
     }
 
     @Override
-    public void onMovieErrors(String message) {
+    public void onRentalsErrors(String message) {
         Message.display(getContext(), message);
     }
 }

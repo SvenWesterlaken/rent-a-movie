@@ -1,22 +1,25 @@
 <resources>
     <string name="app_name">Rent A Movie</string>
-    <string name="preference_file_key">com.example.svenwesterlaken.SHARED_PREFS_FILE</string>
-    <string name="saved_token">saved_token</string>
-    <string name="token_expiration_timestamp">token_timestamp</string>
 
-    <!-- Error messages-->
-    <string name="error_server_offline">Kon de server niet bereiken - probeer het nog een keer.</string>
-    <string name="token_user_mail">user_mail</string>
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Log in</string>
-    <string name="action_sign_up">Sign up</string>
-    <string name="title_activity_movies_pager_adapter">MoviesPagerAdapter</string>
+    <string name="error_server_offline">Could not reach server.</string>
+
+    <string name="hint_email">Email</string>
+    <string name="hint_firstname">First Name</string>
+    <string name="hint_lastname">Last Name</string>
+    <string name="hint_password">Password</string>
+    <string name="btn_login">Log in</string>
+    <string name="btn_signup">Sign up</string>
+    <string name="btn_guest">Sign in as guest</string>
+
     <string name="action_settings">Settings</string>
-    <string name="section_format">Hello World from section: %1$d</string>
-    <string name="title_activity_main">Rent A Movie</string>
 
-    <string name="title_home">Rentals</string>
-    <string name="title_dashboard">Movies</string>
-    <string name="title_notifications">Settings</string>
+    <string name="title_activity_main">Rent A Movie</string>
+    <string name="title_rentals">My Rentals</string>
+    <string name="title_movies">Movies</string>
+
+    <string name="title_activity_register">Register</string>
+    <string name="menu_logout">logout</string>
+    <string name="title_activity_rental_detailed">Rental</string>
+    <string name="rental_btn_handin">Hand in</string>
+    <string name="rental_btn_extend">extend</string>
 </resources>

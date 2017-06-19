@@ -91,7 +91,13 @@ router.post('/login', function(req, res) {
             var response = JSON.parse(JSON.stringify(rows[0]));
             //console.log(response);
             if(bcrypt.compareSync(password, response['password'])) {
-              res.status(200).json({"token" : auth.encodeToken(email), "email" : email});
+              res.status(200).json({
+                "token" : auth.encodeToken(email),
+                "email" : response.email,
+                "firstname" : response.first_name,
+                "lastname" : response.last_name,
+                "customer_id" : response.customer_id
+              });
             } else {
               res.status(401).json({"error":"Invalid password"});
             }

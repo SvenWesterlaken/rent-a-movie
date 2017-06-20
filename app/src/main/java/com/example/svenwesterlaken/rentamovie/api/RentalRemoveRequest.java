@@ -19,20 +19,19 @@ import java.util.Map;
  * Created by Sven Westerlaken on 19-6-2017.
  */
 
-public class RentalAddRequest implements Response.Listener<JSONObject>, Response.ErrorListener {
+public class RentalRemoveRequest implements Response.Listener<JSONObject>, Response.ErrorListener {
     private Context context;
-    private RentalAddListener listener;
-    public final String TAG = this.getClass().getSimpleName();
+    private RentalRemoveListener listener;
 
-    public RentalAddRequest(Context context, RentalAddListener listener) {
+    public RentalRemoveRequest(Context context, RentalRemoveListener listener) {
         this.context = context;
         this.listener = listener;
     }
 
-    public void handleAddRental(int userid, int inventoryid) {
+    public void handleRemoveRental(int userid, int inventoryid) {
         String url = Config.URL_RENTAL + userid + "/" + inventoryid;
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, null, this, this) {
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, null, this, this) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 return LoginUtil.getAuthHeaders();
@@ -43,18 +42,17 @@ public class RentalAddRequest implements Response.Listener<JSONObject>, Response
 
     @Override
     public void onErrorResponse(VolleyError error) {
-        Log.e(TAG, error.toString());
         listener.onErrors("Something went wrong");
 
     }
 
     @Override
     public void onResponse(JSONObject response) {
-        listener.onRentalAdded();
+        listener.onRentalRemoved();
     }
 
-    public interface RentalAddListener {
-        void onRentalAdded();
+    public interface RentalRemoveListener {
+        void onRentalRemoved();
         void onErrors(String message);
 
     }

@@ -42,6 +42,7 @@ public class RentalListAdapter extends RecyclerView.Adapter<RentalListAdapter.Re
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(context, RentalDetailedActivity.class);
+                i.putExtra("rental", rental);
                 context.startActivity(i);
             }
         });

@@ -210,6 +210,7 @@ describe('Get copies of a film', function() {
         expect(res).to.have.status(200);
         expect(res.body).to.be.an.array();
         expect(res.body).to.be.ofSize(8);
+        done();
       });
   });
 });
@@ -280,10 +281,9 @@ describe('Add a rental', function() {
 
 
 describe('Get rentals of a user', function() {
-
   it('Get rentals from user 14', function(done) {
     chai.request(server)
-      .get('/api/v1/rentals/13')
+      .get('/api/v1/rentals/14')
       .set('W-Access-Token', auth.encodeToken(userEmail))
       .end(function(err, res) {
         expect(err).to.be.null;

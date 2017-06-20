@@ -59,6 +59,12 @@ public class DetailedMovieActivity extends AppCompatActivity implements Inventor
     }
 
     private void getCopies(int movieID) {
+        if(!inventories.isEmpty()) {
+            int size = inventories.size();
+            inventories.clear();
+            inventoryAdapter.notifyItemRangeRemoved(0, size);
+        }
+
         InventoryRequest request = new InventoryRequest(getApplicationContext(), this);
         request.handleGetAllInventories(movieID);
     }

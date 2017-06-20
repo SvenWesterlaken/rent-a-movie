@@ -1,14 +1,14 @@
 package com.example.svenwesterlaken.rentamovie.api;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.example.svenwesterlaken.rentamovie.domain.Rental;
+import com.example.svenwesterlaken.rentamovie.domain.Inventory;
 import com.example.svenwesterlaken.rentamovie.util.Config;
 import com.example.svenwesterlaken.rentamovie.util.LoginUtil;
 import com.google.gson.Gson;
@@ -22,50 +22,50 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Created by Dajakah on 19-6-2017.
+ */
 
-public class RentalRequest implements Response.Listener<JSONArray>, Response.ErrorListener{
+public class InventoryRequest implements Response.Listener<JSONArray>, Response.ErrorListener {
     private Context context;
-    private RentalRequestListener listener;
+    private InventoryRequestListener listener;
+    public final String TAG = this.getClass().getSimpleName();
 
-    public RentalRequest(Context context, RentalRequestListener listener) {
+    public InventoryRequest(Context context, InventoryRequestListener listener) {
         this.context = context;
         this.listener = listener;
     }
 
-    public void handleGetAllRentals() {
-        String url = Config.URL_RENTAL + LoginUtil.getUserID();
+    public void handleGetAllInventories(int id) {
+        String url = Config.URL_INVENTORY + id;
 
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null, this, this) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 return LoginUtil.getAuthHeaders();
             }
-        };
+        };;
         VolleyRequestQueue.getInstance(context).addToRequestQueue(jsonArrayRequest);
     }
 
     @Override
     public void onErrorResponse(VolleyError error) {
-        NetworkResponse nr = error.networkResponse;
-        if(nr.statusCode == 404) {
-            listener.onRentalsErrors("No rentals found");
-        } else {
-            listener.onRentalsErrors("Something went wrong");
-        }
+        Log.e(TAG, error.toString());
+        listener.onInventoryErrors("Something went wrong");
 
     }
 
     @Override
     public void onResponse(JSONArray response) {
         JsonArray result = (JsonArray) new JsonParser().parse(response.toString());
-        List<Rental> rentals = new ArrayList<>(Arrays.asList(new Gson().fromJson(result, Rental[].class)));
-        listener.onRentalsAvailable(rentals);
+        List<Inventory> inventories = new ArrayList<>(Arrays.asList(new Gson().fromJson(result, Inventory[].class)));
+        listener.onInventoriesAvailable(inventories);
+
     }
 
+    public interface InventoryRequestListener {
+        void onInventoriesAvailable(List<Inventory> inventories);
+        void onInventoryErrors(String message);
 
-    public interface RentalRequestListener {
-            void onRentalsAvailable(List<Rental> rentals);
-            void onRentalsErrors(String message);
-        }
     }
-
+}

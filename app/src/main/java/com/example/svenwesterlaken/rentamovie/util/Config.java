@@ -11,6 +11,7 @@ public class Config {
     public static final String URL_REGISTER = BASIC_URL + "/register";
     public static final String URL_FILMS = BASIC_URL + "/films?count=20&offset=0";
     public static final String URL_RENTAL = BASIC_URL + "/rentals/";
+    public static final String URL_INVENTORY = BASIC_URL + "/inventory/";
 
     public static final String JWT_key = "SecretKeyForProgramExam-01928738-";
 

@@ -1,5 +1,6 @@
 package com.example.svenwesterlaken.rentamovie.logic;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,19 +16,21 @@ import com.example.svenwesterlaken.rentamovie.util.LoginUtil;
 import java.util.List;
 
 /**
- * Created by Dajakah on 19-6-2017.
+ * Created by Sven Westerlaken on 19-6-2017.
  */
 
 public class InventoryListAdapter extends RecyclerView.Adapter<InventoryListAdapter.InventoryViewHolder> {
     private List<Inventory> inventories;
     private Context context;
     private RentalAddRequest.RentalAddListener listener;
+    private Activity a;
 
 
-    public InventoryListAdapter(List<Inventory> inventories, Context context, RentalAddRequest.RentalAddListener listener) {
+    public InventoryListAdapter(List<Inventory> inventories, Context context, RentalAddRequest.RentalAddListener listener, Activity a) {
         this.inventories = inventories;
         this.context = context;
         this.listener = listener;
+        this.a = a;
     }
 
     @Override
@@ -46,6 +49,7 @@ public class InventoryListAdapter extends RecyclerView.Adapter<InventoryListAdap
             holder.view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    a.findViewById(R.id.movie_RV_content).setEnabled(false);
                     RentalAddRequest request = new RentalAddRequest(context, listener);
                     request.handleAddRental(LoginUtil.getUserID(), inventory.getId());
                 }

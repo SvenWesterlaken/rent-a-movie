@@ -22,6 +22,7 @@ public class DetailedMovieActivity extends AppCompatActivity implements Inventor
     private List<Inventory> inventories;
     private InventoryListAdapter inventoryAdapter;
     private Movie movie;
+    private RecyclerView inventoryList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +44,7 @@ public class DetailedMovieActivity extends AppCompatActivity implements Inventor
         if(LoginUtil.isGuest()) {
             onInventoryErrors("Inventory not available for guests");
         } else {
-            RecyclerView inventoryList = (RecyclerView) findViewById(R.id.Inventory_RV_content);
+            inventoryList = (RecyclerView) findViewById(R.id.movie_RV_content);
 
             LinearLayoutManager layoutManager = new LinearLayoutManager(getApplication());
             layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -52,7 +53,7 @@ public class DetailedMovieActivity extends AppCompatActivity implements Inventor
             assert movie != null;
             getCopies(movie.getId());
 
-            inventoryAdapter = new InventoryListAdapter(inventories, getApplicationContext(), this);
+            inventoryAdapter = new InventoryListAdapter(inventories, getApplicationContext(), this, this);
             inventoryList.setAdapter(inventoryAdapter);
         }
     }
@@ -77,6 +78,7 @@ public class DetailedMovieActivity extends AppCompatActivity implements Inventor
     @Override
     public void onRentalAdded() {
         getCopies(movie.getId());
+        inventoryList.setEnabled(true);
         Message.display(this, "Rental added");
     }
 

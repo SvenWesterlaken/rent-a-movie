@@ -125,7 +125,7 @@ router.get('/inventory/:filmid', function(req, res) {
 
     pool.getConnection( function(error, connection) {
       if (error) { throw error }
-      pool.query('SELECT * FROM `view_rental` WHERE film_id=? AND (rental_id IS NULL OR rental_id = (SELECT rental_id FROM rental GROUP BY inventory_id ORDER BY rental_id DESC LIMIT 1))', [id], function (errors, rows, fields) {
+      pool.query('SELECT * FROM view_rental GROUP BY inventory_id HAVING film_id=?', [id], function (errors, rows, fields) {
         connection.release();
           if (errors){
               throw errors

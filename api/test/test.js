@@ -201,70 +201,20 @@ describe('Get a film', function() {
   });
 });
 
-var userEmail = "sgaweste@avans.nl";
-
-describe('Get rentals of a user', function() {
-
-  it('Get rentals from user 12', function(done) {
+describe('Get copies of a film', function() {
+  it('Get copies from film 1', function(done) {
     chai.request(server)
-      .get('/api/v1/rentals/12')
-      .set('W-Access-Token', auth.encodeToken(userEmail))
+      .get('/api/v1/inventory/1')
       .end(function(err, res) {
         expect(err).to.be.null;
         expect(res).to.have.status(200);
-        expect(res.body).to.be.ofSize(1);
-        expect(res.body).to.contain.an.item.with.property('inventory_id', 988);
-        done();
-      });
-  });
-
-  it('No acces token given', function(done) {
-    chai.request(server)
-      .get('/api/v1/rentals/12')
-      .end(function(err, res) {
-        expect(err).to.not.be.null;
-        expect(res).to.have.status(401);
-        expect(res.body).to.include({"error": "Not authorised"});
-        done();
-      });
-  });
-
-  it('String given as user ID', function(done) {
-    chai.request(server)
-      .get('/api/v1/rentals/test')
-      .set('W-Access-Token', auth.encodeToken(userEmail))
-      .end(function(err, res) {
-        expect(err).to.not.be.null;
-        expect(res).to.have.status(401);
-        expect(res.body).to.include({"error" : "No proper user ID given"});
-        done();
-      });
-  });
-
-  it('User ID 0', function(done) {
-    chai.request(server)
-      .get('/api/v1/rentals/0')
-      .set('W-Access-Token', auth.encodeToken(userEmail))
-      .end(function(err, res) {
-        expect(err).to.not.be.null;
-        expect(res).to.have.status(401);
-        expect(res.body).to.include({"error" : "No proper user ID given"});
-        done();
-      });
-  });
-
-  it('No rentals found (customer 600)', function(done) {
-    chai.request(server)
-      .get('/api/v1/rentals/600')
-      .set('W-Access-Token', auth.encodeToken(userEmail))
-      .end(function(err, res) {
-        expect(err).to.not.be.null;
-        expect(res).to.have.status(404);
-        expect(res.body).to.include({"msg" : "No rentals found"});
-        done();
+        expect(res.body).to.be.an.array();
+        expect(res.body).to.be.ofSize(8);
       });
   });
 });
+
+var userEmail = "sgaweste@avans.nl";
 
 describe('Add a rental', function() {
   it('Succesful insert', function(done) {
@@ -323,6 +273,70 @@ describe('Add a rental', function() {
         expect(err).to.not.be.null;
         expect(res).to.have.status(401);
         expect(res.body).to.include({"error" : "No proper inventory ID given"});
+        done();
+      });
+  });
+});
+
+
+describe('Get rentals of a user', function() {
+
+  it('Get rentals from user 14', function(done) {
+    chai.request(server)
+      .get('/api/v1/rentals/13')
+      .set('W-Access-Token', auth.encodeToken(userEmail))
+      .end(function(err, res) {
+        expect(err).to.be.null;
+        expect(res).to.have.status(200);
+        expect(res.body).to.be.an.array();
+        expect(res.body).to.contain.an.item.with.property('inventory_id', 80);
+        done();
+      });
+  });
+
+  it('No acces token given', function(done) {
+    chai.request(server)
+      .get('/api/v1/rentals/14')
+      .end(function(err, res) {
+        expect(err).to.not.be.null;
+        expect(res).to.have.status(401);
+        expect(res.body).to.include({"error": "Not authorised"});
+        done();
+      });
+  });
+
+  it('String given as user ID', function(done) {
+    chai.request(server)
+      .get('/api/v1/rentals/test')
+      .set('W-Access-Token', auth.encodeToken(userEmail))
+      .end(function(err, res) {
+        expect(err).to.not.be.null;
+        expect(res).to.have.status(401);
+        expect(res.body).to.include({"error" : "No proper user ID given"});
+        done();
+      });
+  });
+
+  it('User ID 0', function(done) {
+    chai.request(server)
+      .get('/api/v1/rentals/0')
+      .set('W-Access-Token', auth.encodeToken(userEmail))
+      .end(function(err, res) {
+        expect(err).to.not.be.null;
+        expect(res).to.have.status(401);
+        expect(res.body).to.include({"error" : "No proper user ID given"});
+        done();
+      });
+  });
+
+  it('No rentals found (customer 600)', function(done) {
+    chai.request(server)
+      .get('/api/v1/rentals/600')
+      .set('W-Access-Token', auth.encodeToken(userEmail))
+      .end(function(err, res) {
+        expect(err).to.not.be.null;
+        expect(res).to.have.status(404);
+        expect(res.body).to.include({"msg" : "No rentals found"});
         done();
       });
   });

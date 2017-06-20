@@ -3,6 +3,7 @@ var chai = require('chai'),
     server = require('../index.js'),
     auth = require('../auth/auth'),
     test = require('./functions'),
+    sinon = require('sinon'),
     chai_arrays = require('chai-arrays'),
     chai_things = require('chai-things'),
     expect = chai.expect;
@@ -48,9 +49,31 @@ describe('Standard urls', function() {
   });
 });
 
-describe('User login', function() {
-  var userEmail = "sgaweste@avans.nl";
+var userEmail = "sgaweste@avans.nl";
 
+describe('Token authentication', function() {
+  var clock;
+    beforeEach(function () {
+      clock = sinon.useFakeTimers();
+    });
+
+    afterEach(function () {
+      clock.restore();
+    });
+
+  it('Token Expired', function(done) {
+    const token = auth.encodeToken(userEmail);
+      expect(token).to.not.be.null;
+      expect(token).to.be.a('string');
+      clock.tick(624800000);
+      auth.decodeToken(token, (err, res) => {
+        expect(err).to.not.be.null;
+        done();
+      });
+  });
+})
+
+describe('User login', function() {
   it('Valid login', function(done) {
     chai.request(server)
       .post('/api/v1/login')
@@ -210,6 +233,39 @@ describe('Get copies of a film', function() {
         expect(res).to.have.status(200);
         expect(res.body).to.be.an.array();
         expect(res.body).to.be.ofSize(8);
+        done();
+      });
+  });
+
+  it('No copies found (Film 1001)', function(done) {
+    chai.request(server)
+      .get('/api/v1/inventory/1001')
+      .end(function(err, res) {
+        expect(err).to.not.be.null;
+        expect(res).to.have.status(404);
+        expect(res.body).to.include({"msg":"No items found"});
+        done();
+      });
+  });
+
+  it('String given as film ID', function(done) {
+    chai.request(server)
+      .get('/api/v1/inventory/test')
+      .end(function(err, res) {
+        expect(err).to.not.be.null;
+        expect(res).to.have.status(401);
+        expect(res.body).to.include({"error" : "No proper film ID given"});
+        done();
+      });
+  });
+
+  it('Film ID 0', function(done) {
+    chai.request(server)
+      .get('/api/v1/inventory/0')
+      .end(function(err, res) {
+        expect(err).to.not.be.null;
+        expect(res).to.have.status(401);
+        expect(res.body).to.include({"error" : "No proper film ID given"});
         done();
       });
   });
